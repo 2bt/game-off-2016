@@ -1,6 +1,7 @@
 G = love.graphics
 
 
+
 -- init technical stuff
 W = 320
 H = 200
@@ -9,24 +10,17 @@ canvas = G.newCanvas(W, H)
 love.window.setMode(W * 2, H * 2, {resizable = true})
 love.mouse.setVisible(false)
 
-
 require("helper")
 require("map")
-
-
+require("player")
 
 map = Map()
 
 
 
-
-
-
-
-
 function love.update(dt)
 
-
+  map.player:update()
 
 end
 
@@ -36,20 +30,18 @@ function love.draw()
 	G.setCanvas(canvas)
 	G.clear(0, 0, 0)
 
-
 	-- render stuff
-
 	t = t + 1
 
+	G.rotate(0.05 * math.cos(t*0.01))
+  local p = map.player
+  G.translate( W / 2 - p.x, H / 2 - p.y )
 
---	G.translate(400, 300)
-	G.rotate(math.sin(t*0.1) * 0.2)
+  -- G.translate(400, 300)
 
 
 	map:draw()
-
-
-
+  p:draw()
 
 
 	-- draw canvas independent of resolution

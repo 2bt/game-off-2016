@@ -18,6 +18,11 @@ end })
 bool = { [true] = 1, [false] = 0 }
 
 
+function clamp(x, a, b)
+  return math.max(a, math.min(x, b))
+end
+
+
 function makeQuads(w, h, s)
 	local quads = {}
 	for y = 0, h - s, s do

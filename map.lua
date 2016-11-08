@@ -14,6 +14,7 @@ function Map:init()
 	self.h = data.height
 
 
+  self.player = Player()
 	self.entities = {}
 	self.layers = {}
 
@@ -31,11 +32,11 @@ function Map:init()
 			for j, obj in ipairs(layer.objects) do
 
 
+        print(obj.name)
 				if obj.name == "player" then
---					entities.player = {
---						x = obj.x + obj.width / 2
---						y = obj.y + obj.height / 2
---					}
+            print( "player" )
+            self.player.x = obj.x + obj.width / 2
+            self.player.y = obj.y + obj.height / 2
 				end
 
 			end
@@ -46,8 +47,8 @@ function Map:init()
 end
 function Map:draw()
 
-	for y = 0, 30 do
-		for x = 0, 30 do
+	for y = 0, self.h-1 do
+		for x = 0, self.w-1 do
 
 			local cell = self.layers.walls[y * self.w + x + 1]
 			if cell > 0 then

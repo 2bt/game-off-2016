@@ -25,7 +25,7 @@
         {
          "draworder":"topdown",
          "height":100,
-         "name":"enities",
+         "name":"entities",
          "objects":[
                 {
                  "height":16,
@@ -85,6 +85,7 @@
 
             },
          "spacing":0,
+         "tilecount":256,
          "tileheight":16,
          "tilewidth":16
         }],
