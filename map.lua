@@ -45,12 +45,16 @@ function Map:init()
 	end
 
 end
-function Map:draw()
+function Map:draw(layername)
+
+
+
+	local layer = self.layers[layername or "walls"]
 
 	for y = 0, self.h-1 do
 		for x = 0, self.w-1 do
 
-			local cell = self.layers.walls[y * self.w + x + 1]
+			local cell = layer[y * self.w + x + 1]
 			if cell > 0 then
 
 				G.draw(self.tileset, self.quads[cell], x * 16, y * 16)
@@ -60,4 +64,30 @@ function Map:draw()
 
 		end
 	end
+
+
+	-- shadow
+	if layername == "floor" then
+
+		G.setColor(0, 0, 0, 70)
+		local layer = self.layers.walls
+
+		for y = 0, self.h-1 do
+			for x = 0, self.w-1 do
+
+				local cell = layer[y * self.w + x + 1]
+				if cell > 0 then
+
+					G.rectangle("fill", x * 16 + 3, y * 16 + 3, 16, 16)
+
+				end
+
+
+			end
+		end
+
+		G.setColor(255, 255, 255)
+	end
+
+
 end

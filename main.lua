@@ -1,7 +1,6 @@
 G = love.graphics
 
 
-
 -- init technical stuff
 W = 320
 H = 200
@@ -20,7 +19,7 @@ map = Map()
 
 function love.update(dt)
 
-  map.player:update()
+	map.player:update()
 
 end
 
@@ -32,16 +31,17 @@ function love.draw()
 
 	-- render stuff
 	t = t + 1
+	local p = map.player
 
+	G.translate( W / 2, H / 2 )
 	G.rotate(0.05 * math.cos(t*0.01))
-  local p = map.player
-  G.translate( W / 2 - p.x, H / 2 - p.y )
-
-  -- G.translate(400, 300)
+	G.translate( math.floor(-p.x + 0.5), math.floor(-p.y + 0.5) )
 
 
-	map:draw()
-  p:draw()
+
+	map:draw("floor")
+	p:draw()
+	map:draw("walls")
 
 
 	-- draw canvas independent of resolution
