@@ -11,7 +11,7 @@ function Player:init()
 
 	local body		= P.newBody( world, 0, 0, "dynamic" )
 	body:setFixedRotation( true )
-	local radius	= 10
+	local radius	= 6
 	local shape		= P.newCircleShape( 0, 0, radius )
 	local density = 1
 	local fixture = P.newFixture( body, shape, density )
