@@ -32,10 +32,7 @@ function Map:init()
 		elseif layer.name == "entities" then
 			for _, obj in ipairs(layer.objects) do
 
-
-        print(obj.name)
 				if obj.name == "player" then
-            print( "player" )
             local x = obj.x + obj.width / 2
             local y = obj.y + obj.height / 2
             self.player:setPos( x, y )
@@ -54,7 +51,6 @@ function Map:init()
             table.insert( points, point.x + obj.x )
             table.insert( points, point.y + obj.y )
           end
-          print( "chain" )
           local shape   = P.newChainShape( false, points )
           local fixture = P.newFixture( self.body_static, shape )
 

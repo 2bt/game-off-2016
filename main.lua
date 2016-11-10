@@ -1,6 +1,10 @@
 G = love.graphics
 P = love.physics
 
+print( "# game-off-2016" )
+print( "#" )
+print( "# hit F2 for draw_debug_physics" )
+print()
 
 -- init technical stuff
 W = 320
@@ -91,14 +95,10 @@ function draw_debug_physics()
         G.circle( 'line', bx + sx, by + sy, r, 10 )
       
       elseif shape_type == 'chain' then
-        print( 'chain', shape:getPoints() )
         G.line( shape:getPoints() )
 
       elseif shape_type == 'polygon' then
         G.polygon( 'line', shape:getPoints() )
-
-        local x, _ = shape:getPoints()
-        if x == 960-16 then print( x ) end
 
       else
         -- todo
