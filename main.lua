@@ -1,4 +1,5 @@
 G = love.graphics
+P = love.physics
 
 
 -- init technical stuff
@@ -13,12 +14,14 @@ require("helper")
 require("map")
 require("player")
 
+world = P.newWorld()
 map = Map()
 
 
 
 function love.update(dt)
 
+  world:update( dt )  
 	map.player:update()
 
 end
@@ -26,7 +29,7 @@ end
 t = 0
 
 function love.draw()
-	G.setCanvas(canvas)
+  G.setCanvas(canvas)
 	G.clear(0, 0, 0)
 
 	-- render stuff
@@ -34,14 +37,18 @@ function love.draw()
 	local p = map.player
 
 	G.translate( W / 2, H / 2 )
-	G.rotate(0.05 * math.cos(t*0.01))
-	G.translate( math.floor(-p.x + 0.5), math.floor(-p.y + 0.5) )
+  G.rotate(0.01 + 0.01 * (1 + 0.5 * math.cos(t*0.01)))
+  G.translate( math.floor(-p.x + 0.5), math.floor(-p.y + 0.5) )
 
 
 
 	map:draw("floor")
 	p:draw()
 	map:draw("walls")
+
+  if isDown("f2") then
+    draw_debug_physics()
+  end
 
 
 	-- draw canvas independent of resolution
@@ -57,4 +64,48 @@ function love.draw()
 	end
 	G.setCanvas()
 	G.draw(canvas)
+end
+
+function draw_debug_physics()
+  G.push()
+
+  local bodies = world:getBodyList()
+  for i, body in pairs(bodies) do
+    local bx = body:getX()
+    local by = body:getY()
+    local bangle = body:getAngle()
+    local fixtures = body:getFixtureList()
+
+    G.setColor( 255, 192, 192 )
+    G.circle( 'fill', bx, by, 3, 6 )
+    G.line( bx, by, bx + 8 * math.cos(bangle), by + 8 * math.sin(bangle) )
+    G.setColor( 255, 64, 64 )
+
+    for j, fixture in pairs(fixtures) do
+      local shape = fixture:getShape()
+      local shape_type = shape:getType()
+
+      if shape_type == 'circle' then
+        local sx, sy = shape:getPoint()
+        local r = shape:getRadius()
+        G.circle( 'line', bx + sx, by + sy, r, 10 )
+      
+      elseif shape_type == 'chain' then
+        print( 'chain', shape:getPoints() )
+        G.line( shape:getPoints() )
+
+      elseif shape_type == 'polygon' then
+        G.polygon( 'line', shape:getPoints() )
+
+        local x, _ = shape:getPoints()
+        if x == 960-16 then print( x ) end
+
+      else
+        -- todo
+      end
+    end
+  end
+
+  G.setColor( 255, 255, 255 ) -- reset color for others
+  G.pop()
 end

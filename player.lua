@@ -8,6 +8,25 @@ function Player:init()
 	self.vx = 0
 	self.vy = 0
 	self.ang = 0
+
+  local body    = P.newBody( world, 0, 0, "dynamic" )
+  body:setFixedRotation( true )
+  local radius  = 10
+  local shape   = P.newCircleShape( 0, 0, radius )
+  local density = 1
+  local fixture = P.newFixture( body, shape, density )
+  self.body     = body
+end
+
+function Player:setPos( x, y )
+  self.body:setX( x )
+  self.body:setY( y )
+  self.x = x
+  self.y = y
+end
+
+function Player:pos()
+  return self.body:getX(), self.body:getY()
 end
 
 function Player:update()
@@ -40,14 +59,15 @@ function Player:update()
 	self.vx = clamp(self.vx, -speed, speed)
 	self.vy = clamp(self.vy, -speed, speed)
 
-
-	self.x = self.x + self.vx
+  
+  self.x = self.x + self.vx
 	self.y = self.y + self.vy
+
+  self.body:applyLinearImpulse( ix, iy )
 
 	if self.vx ~= 0 or self.vy ~= 0 then
 		self.ang = math.atan2(self.vx, -self.vy)
 	end
-
 end
 
 function Player:draw()
@@ -57,6 +77,15 @@ function Player:draw()
 	G.push()
 	G.translate(self.x, self.y)
 	G.rotate(self.ang)
+  G.setColor( 192, 255, 192 )
+	G.rectangle( "fill", -5, -3, 10, 6 )
+	G.pop()
+
+	G.push()
+  local x, y = self:pos()
+	G.translate(x, y)
+	G.rotate(self.ang)
+  G.setColor( 255, 192, 192 )
 	G.rectangle( "fill", -5, -3, 10, 6 )
 	G.pop()
 end

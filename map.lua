@@ -17,8 +17,9 @@ function Map:init()
   self.player = Player()
 	self.entities = {}
 	self.layers = {}
+  self.body_static = P.newBody( world, 0, 0 )
 
-	for i, layer in pairs(data.layers) do
+	for _, layer in pairs(data.layers) do
 
 
 		if layer.type == "tilelayer" then
@@ -29,18 +30,41 @@ function Map:init()
 
 
 		elseif layer.name == "entities" then
-			for j, obj in ipairs(layer.objects) do
+			for _, obj in ipairs(layer.objects) do
 
 
         print(obj.name)
 				if obj.name == "player" then
             print( "player" )
-            self.player.x = obj.x + obj.width / 2
-            self.player.y = obj.y + obj.height / 2
+            local x = obj.x + obj.width / 2
+            local y = obj.y + obj.height / 2
+            self.player:setPos( x, y )
 				end
 
 			end
-		end
+
+
+
+    elseif layer.name == "physics_walls" then
+      for _, obj in ipairs(layer.objects) do
+        
+        if obj.polyline then
+          local points = {}
+          for _, point in ipairs(obj.polyline) do
+            table.insert( points, point.x + obj.x )
+            table.insert( points, point.y + obj.y )
+          end
+          print( "chain" )
+          local shape   = P.newChainShape( false, points )
+          local fixture = P.newFixture( self.body_static, shape )
+
+        else -- rectangle
+          local shape   = P.newRectangleShape( obj.x + obj.width/2, obj.y + obj.height/2, obj.width, obj.height, obj.rotation )
+          local fixture = P.newFixture( self.body_static, shape )
+        
+        end
+      end
+    end
 
 	end
 
