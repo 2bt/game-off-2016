@@ -14,10 +14,11 @@ function Map:init()
 	self.h = data.height
 
 
-  self.player = Player()
+    self.player = Player()
 	self.entities = {}
 	self.layers = {}
-  self.body_static = P.newBody( world, 0, 0 )
+    self.body_static = P.newBody( world, 0, 0 )
+    self.items = {}
 
 	for _, layer in pairs(data.layers) do
 
@@ -33,9 +34,14 @@ function Map:init()
 			for _, obj in ipairs(layer.objects) do
 
 				if obj.name == "player" then
-            local x = obj.x + obj.width / 2
-            local y = obj.y + obj.height / 2
-            self.player:setPos( x, y )
+                    local x = obj.x + obj.width / 2
+                    local y = obj.y + obj.height / 2
+                    self.player:setPos( x, y )
+
+                elseif obj.name == "item" then
+                    local item = Item()
+                    item:setActive(obj.x + obj.width / 2, obj.y + obj.height / 2)
+                    table.insert(self.items, item)
 				end
 
 			end
@@ -70,24 +76,24 @@ function Map:draw(layername)
 
 
 	local layer = self.layers[layername or "walls"]
+    
+    if layername == "walls" then
+	    for y = 0, self.h-1 do
+		    for x = 0, self.w-1 do
 
-	for y = 0, self.h-1 do
-		for x = 0, self.w-1 do
+			    local cell = layer[y * self.w + x + 1]
+			    if cell > 0 then
 
-			local cell = layer[y * self.w + x + 1]
-			if cell > 0 then
+				    G.draw(self.tileset, self.quads[cell], x * 16, y * 16)
 
-				G.draw(self.tileset, self.quads[cell], x * 16, y * 16)
-
-			end
+			    end
 
 
-		end
-	end
-
+		    end
+	    end
 
 	-- shadow
-	if layername == "floor" then
+	elseif layername == "floor" then
 
 		G.setColor(0, 0, 0, 70)
 		local layer = self.layers.walls
@@ -107,7 +113,12 @@ function Map:draw(layername)
 		end
 
 		G.setColor(255, 255, 255)
-	end
-
-
+    end
 end
+
+function Map:drawItems()
+    for i, item in pairs(self.items) do
+        item:draw()
+    end
+end
+

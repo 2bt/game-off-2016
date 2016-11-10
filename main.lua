@@ -17,6 +17,7 @@ love.mouse.setVisible(false)
 require("helper")
 require("map")
 require("player")
+require("items")
 
 world = P.newWorld()
 map = Map()
@@ -49,6 +50,7 @@ function love.draw()
 	map:draw("floor")
 	p:draw()
 	map:draw("walls")
+	map:drawItems()
 
   if isDown("f2") then
     draw_debug_physics()
