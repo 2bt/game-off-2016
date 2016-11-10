@@ -77,7 +77,7 @@ function Player:draw()
 	G.push()
 	G.translate(self.x, self.y)
 	G.rotate(self.ang)
-  G.setColor( 192, 255, 192 )
+  G.setColor( 255, 255, 255 )
 	G.rectangle( "fill", -5, -3, 10, 6 )
 	G.pop()
 
@@ -88,4 +88,6 @@ function Player:draw()
   G.setColor( 255, 192, 192 )
 	G.rectangle( "fill", -5, -3, 10, 6 )
 	G.pop()
+
+  G.setColor( 255, 255, 255 ) -- reset for others
 end
