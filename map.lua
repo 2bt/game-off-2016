@@ -117,7 +117,7 @@ function Map:draw(layername)
 end
 
 function Map:drawItems()
-    for i, item in pairs(self.items) do
+    for _, item in pairs(self.items) do
         item:draw()
     end
 end
