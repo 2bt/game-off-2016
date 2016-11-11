@@ -10,6 +10,7 @@ function Item:setActive( x, y )
     local static = P.newBody(world, x,y, "static")
     local shape = P.newCircleShape(0, 0, 4)
     self.fixture = P.newFixture(static, shape)
+    self.fixture:setSensor( true )
     self.static = static
 end
 
