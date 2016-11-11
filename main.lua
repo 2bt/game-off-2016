@@ -19,9 +19,24 @@ require("map")
 require("player")
 require("items")
 
-world = P.newWorld()
-map = Map()
+function love.load()
+    world = P.newWorld()
+    world:setCallbacks(beginContact, endContact, preSolve, postSolve)
+    map = Map()
+end
 
+function beginContact(a, b, coll)
+    map:deleteItem(b)
+end
+ 
+function endContact(a, b, coll)
+end
+ 
+function preSolve(a, b, coll)
+end
+ 
+function postSolve(a, b, coll, normalimpulse, tangentimpulse)
+end
 
 
 function love.update(dt)

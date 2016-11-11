@@ -122,3 +122,13 @@ function Map:drawItems()
     end
 end
 
+function Map:deleteItem(delete)
+    for _, item in pairs(self.items) do
+        if item.fixture == delete then
+            item.fixture:destroy()
+            item.static:destroy()
+            table.remove(self.items, _)
+        end
+    end
+end
+
