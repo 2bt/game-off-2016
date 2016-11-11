@@ -11,7 +11,7 @@ function Player:init()
 	local fixture = P.newFixture( body, shape )
 	body:setFixedRotation( true )
 	--body:setMass( 1 ) -- not necessary right now
-	self.body			= body
+	self.body     = body
 
 end
 
@@ -32,8 +32,8 @@ function Player:update()
 	local ix = bool[isDown("right")] - bool[isDown("left")]
 	local iy = bool[isDown("down")] - bool[isDown("up")]
 
-	local v_max       = 60
-	local accel_max   = 6
+	local v_max       = 85
+	local accel_max   = 8.5
 	local diagonal    = 1 / math.sqrt(2)
 	-- local diagonal    = 1 -- for double speed on diagonal movement
 	if ix ~= 0 and iy ~= 0 then
