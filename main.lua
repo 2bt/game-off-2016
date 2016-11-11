@@ -25,24 +25,26 @@ map = Map()
 
 function love.update(dt)
 
-  world:update( dt )  
+	-- need to split entity physics update from entity logic update
 	map.player:update()
+	world:update( 1 / 60 )
 
 end
 
 t = 0
 
 function love.draw()
-  G.setCanvas(canvas)
+	G.setCanvas(canvas)
 	G.clear(0, 0, 0)
 
 	-- render stuff
 	t = t + 1
 	local p = map.player
+	local px, py = p:pos()
 
 	G.translate( W / 2, H / 2 )
-  G.rotate(0.01 + 0.01 * (1 + 0.5 * math.cos(t*0.01)))
-  G.translate( math.floor(-p.x + 0.5), math.floor(-p.y + 0.5) )
+	G.rotate(0.01 + 0.01 * (1 + 0.5 * math.cos(t*0.01)))
+	G.translate( math.floor(-px + 0.5), math.floor(-py + 0.5) )
 
 
 
