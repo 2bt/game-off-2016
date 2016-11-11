@@ -52,9 +52,9 @@ function love.draw()
 	p:draw()
 	map:draw("walls")
 
-  if isDown("f2") then
-    draw_debug_physics()
-  end
+	if isDown("f2") then
+		draw_debug_physics()
+	end
 
 
 	-- draw canvas independent of resolution
@@ -73,41 +73,41 @@ function love.draw()
 end
 
 function draw_debug_physics()
-  G.push()
+	G.push()
 
-  local bodies = world:getBodyList()
-  for i, body in pairs(bodies) do
-    local bx = body:getX()
-    local by = body:getY()
-    local bangle = body:getAngle()
-    local fixtures = body:getFixtureList()
+	local bodies = world:getBodyList()
+	for i, body in pairs(bodies) do
+		local bx = body:getX()
+		local by = body:getY()
+		local bangle = body:getAngle()
+		local fixtures = body:getFixtureList()
 
-    G.setColor( 255, 192, 192 )
-    G.circle( 'fill', bx, by, 3, 6 )
-    G.line( bx, by, bx + 8 * math.cos(bangle), by + 8 * math.sin(bangle) )
-    G.setColor( 255, 64, 64 )
+		G.setColor( 255, 192, 192 )
+		G.circle( 'fill', bx, by, 3, 6 )
+		G.line( bx, by, bx + 8 * math.cos(bangle), by + 8 * math.sin(bangle) )
+		G.setColor( 255, 64, 64 )
 
-    for j, fixture in pairs(fixtures) do
-      local shape = fixture:getShape()
-      local shape_type = shape:getType()
+		for j, fixture in pairs(fixtures) do
+			local shape = fixture:getShape()
+			local shape_type = shape:getType()
 
-      if shape_type == 'circle' then
-        local sx, sy = shape:getPoint()
-        local r = shape:getRadius()
-        G.circle( 'line', bx + sx, by + sy, r, 10 )
-      
-      elseif shape_type == 'chain' then
-        G.line( shape:getPoints() )
+			if shape_type == 'circle' then
+				local sx, sy = shape:getPoint()
+				local r = shape:getRadius()
+				G.circle( 'line', bx + sx, by + sy, r, 10 )
 
-      elseif shape_type == 'polygon' then
-        G.polygon( 'line', shape:getPoints() )
+			elseif shape_type == 'chain' then
+				G.line( shape:getPoints() )
 
-      else
-        -- todo
-      end
-    end
-  end
+			elseif shape_type == 'polygon' then
+				G.polygon( 'line', shape:getPoints() )
 
-  G.setColor( 255, 255, 255 ) -- reset color for others
-  G.pop()
+			else
+				-- todo
+			end
+		end
+	end
+
+	G.setColor( 255, 255, 255 ) -- reset color for others
+	G.pop()
 end

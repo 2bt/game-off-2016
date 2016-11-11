@@ -19,8 +19,9 @@ bool = { [true] = 1, [false] = 0 }
 
 
 function clamp(x, a, b)
-  return math.max(a, math.min(x, b))
+	return math.max(a, math.min(x, b))
 end
+
 
 
 function makeQuads(w, h, s)
