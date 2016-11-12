@@ -29,8 +29,10 @@ end
 function Player:update()
 	-- need to split entity physics update from entity logic update
 
-	local ix = bool[isDown("right")] - bool[isDown("left")]
-	local iy = bool[isDown("down")] - bool[isDown("up")]
+	local ix = math.max(bool[isDown("right")], bool[isDown("d")])
+	    - math.max(bool[isDown("left")], bool[isDown("a")])
+	local iy = math.max(bool[isDown("down")], bool[isDown("s")])
+	    - math.max(bool[isDown("up")], bool[isDown("w")])
 
 	local v_max       = 85
 	local accel_max   = 8.5
