@@ -31,10 +31,10 @@ function Player:update()
 
 	local ix = (math.max(bool[isDown("right")], bool[isDown("d")])
 	    - math.max(bool[isDown("left")], bool[isDown("a")]) )
-	    * (1 + bool[isDown("lshift")])
+	    * (1 + bool[isDown("lshift")]*0.5)
 	local iy = (math.max(bool[isDown("down")], bool[isDown("s")])
 	    - math.max(bool[isDown("up")], bool[isDown("w")]) )
-	    * (1 + bool[isDown("lshift")])
+	    * (1 + bool[isDown("lshift")]*0.5)
 
 	local v_max       = 85
 	local accel_max   = 8.5
