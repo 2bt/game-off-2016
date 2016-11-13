@@ -15,6 +15,7 @@ love.window.setMode(W * 2, H * 2, {resizable = true})
 love.mouse.setVisible(false)
 
 require("helper")
+require("enemies")
 require("map")
 require("player")
 require("item")
@@ -64,6 +65,7 @@ function love.update(dt)
 
 	-- need to split entity physics update from entity logic update
 	map.player:update()
+	map:objects_call( "update" )
 
 	for i, door in ipairs(map.doors) do
 		door:update()
@@ -90,15 +92,25 @@ function love.draw()
 	G.translate( math.floor(-px + 0.5), math.floor(-py + 0.5) )
     
     -- draw stuff
+    G.setColor( 255, 255, 255 )
 	map:draw("floor")
-	p:draw()
+	G.setColor( 255, 255, 255 )
 	map:draw("walls")
+	G.setColor( 255, 255, 255 )
 	map:drawItems()
+	G.setColor( 255, 255, 255 )
 	map:drawTerminals()
+	G.setColor( 255, 255, 255 )
 	map:drawDoors()
+	G.setColor( 255, 255, 255 )
+	p:draw()
+	G.setColor( 255, 255, 255 )
+	map:objects_call( "draw" )
+	G.setColor( 255, 255, 255 )
 
 	if isDown("f2") then
 		draw_debug_physics()
+		G.setColor( 255, 255, 255 )
 	end
 
 

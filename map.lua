@@ -14,13 +14,13 @@ function Map:init()
 	self.h = data.height
 
 
-    self.player = Player()
-	self.entities = {}
+	self.player = Player()
 	self.layers = {}
-    self.body_static = P.newBody( world, 0, 0 )
-    self.items = {}
-    self.terminals = {}
-    self.doors = {}
+	self.body_static = P.newBody( world, 0, 0 )
+	self.items = {}
+	self.terminals = {}
+	self.doors = {}
+	self:objects_init()
 
 	for _, layer in pairs(data.layers) do
 
@@ -74,18 +74,74 @@ function Map:init()
           end
           local shape   = P.newChainShape( false, points )
           local fixture = P.newFixture( self.body_static, shape )
+          fixture:setUserData( "wall" )
 
         else -- rectangle
           local shape   = P.newRectangleShape( obj.x + obj.width/2, obj.y + obj.height/2, obj.width, obj.height, obj.rotation )
           local fixture = P.newFixture( self.body_static, shape )
+          fixture:setUserData( "wall" )
         
         end
       end
-    end
+
+		elseif layer.type == "objectgroup" then
+			for _, obj_desc in ipairs( layer.objects ) do
+				self:objects_load( obj_desc )
+			end
+		end
 
 	end
 
 end
+
+
+
+function Map:objects_init()
+	self.objects = {}
+	self.obj_by_name = {}
+	self.object_types = {}
+
+	self.object_types[ "dummy" ] = Dummy
+	self:objects_register( "stupid_enemy", StupidEnemy )
+end
+
+function Map:objects_load( obj_desc )
+	local obj_type = self.object_types[ obj_desc.type ]
+	if not obj_type then
+		print( "objects_load: unkown object type", obj_desc.type )
+		return
+	end
+	local obj = obj_type( obj_desc )
+	if not obj then return end
+	table.insert( self.objects, obj )
+	if obj.name then
+		self.obj_by_name[ obj.name ] = obj
+	end
+end
+
+function Map:objects_register( type_name, constructor )
+	if not constructor then
+		print( "objects_register: invalid registration of", type_name, "as", constructor )
+	end
+	self.object_types[ type_name ] = constructor
+end
+
+function Map:objects_call( func_name )
+	for _, obj in ipairs( self.objects ) do
+		if obj[ func_name ] then
+			obj[ func_name ]( obj )
+		end
+	end
+end
+
+Dummy = Object:new()
+function Dummy:init( obj )
+	print( "Dummy:init" )
+end
+
+
+
+
 function Map:draw(layername)
 
 
@@ -93,6 +149,7 @@ function Map:draw(layername)
 	local layer = self.layers[layername or "walls"]
     
     if layername == "walls" then
+			G.setColor( 255, 255, 255 )
 	    for y = 0, self.h-1 do
 		    for x = 0, self.w-1 do
 

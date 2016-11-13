@@ -11,6 +11,7 @@ function Player:init()
 	local fixture = P.newFixture( body, shape )
 	body:setFixedRotation( true )
 	--body:setMass( 1 ) -- not necessary right now
+	fixture:setUserData( "player" )
 	self.body     = body
 
 end

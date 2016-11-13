@@ -348,7 +348,7 @@
                 }],
          "opacity":1,
          "type":"objectgroup",
-         "visible":true,
+         "visible":false,
          "width":200,
          "x":0,
          "y":0
@@ -396,12 +396,40 @@
                 }],
          "opacity":1,
          "type":"objectgroup",
+         "visible":false,
+         "width":200,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "height":100,
+         "name":"stupid_enemies",
+         "objects":[
+                {
+                 "ellipse":true,
+                 "height":0,
+                 "id":62,
+                 "name":"bob",
+                 "properties":
+                    {
+
+                    },
+                 "rotation":0,
+                 "type":"stupid_enemy",
+                 "visible":true,
+                 "width":0,
+                 "x":1273.31951436186,
+                 "y":570.526107985391
+                }],
+         "opacity":1,
+         "type":"objectgroup",
          "visible":true,
          "width":200,
          "x":0,
          "y":0
         }],
- "nextobjectid":60,
+ "nextobjectid":63,
  "orientation":"orthogonal",
  "properties":
     {
