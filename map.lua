@@ -163,15 +163,17 @@ function Map:playerAtTerminal(terminal, atTerminal)
     for _, t in pairs(self.terminals) do
         if t.fixture == terminal then
             t:setPlayerAtTerminal(atTerminal)
-            if atTerminal == 0 then
-                t.isUsed = 0
-            end
         end
     end
 end
 
 function Map:checkTerminals()
     for _, t in pairs(self.terminals) do
+
+        if t.isUsed == 1 and bool[isDown("e")] == 0 then
+            t.isUsed = 0
+        end
+
         if t.playerAtTerminal == 1 and bool[isDown("e")] == 1 and t.isUsed == 0 then
             for _, d in pairs(self.doors) do
                 if t.controlID == d.id then

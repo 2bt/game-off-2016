@@ -24,7 +24,7 @@ function Terminal:draw()
     G.setColor(0, 0, 255)
     G.rectangle("fill", self.x - self.width / 2, self.y - self.height / 2, self.width, self.height) 
     G.setColor(255, 255, 255)
-    if self.playerAtTerminal == 1 and self.isUsed == 0 then
+    if self.playerAtTerminal == 1 then
         G.print("Press E to hack the terminal", self.x - 50, self.y -30)
     end
 end
