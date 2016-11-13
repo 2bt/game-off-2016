@@ -42,12 +42,12 @@ function Map:init()
 
                 elseif obj.name == "item" then
                     local item = Item()
-                    item:setActive(obj.x + obj.width / 2, obj.y + obj.height / 2)
+                    item:setActive(obj.x + obj.width / 2, obj.y + obj.height / 2, obj.width, obj.height)
                     table.insert(self.items, item)
 				
 				elseif obj.name == "terminal" then
 				    local terminal = Terminal()
-				    terminal:setActive(obj.x + obj.width / 2, obj.y + obj.height / 2)
+				    terminal:setActive(obj.x + obj.width / 2, obj.y + obj.height / 2, obj.width, obj.height)
 				    table.insert(self.terminals, terminal)
 				end
 
