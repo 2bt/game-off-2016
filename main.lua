@@ -28,23 +28,25 @@ end
 
 function beginContact(a, b, coll)
     -- a
-    if (a:getCategory() == 2) then -- item
-        map:deleteItem(a)
+    if (a:getCategory() == 2) then -- item picked up
+        map:pickupItem(a)
     elseif (a:getCategory() == 3) then -- terminal entered
         map:playerAtTerminal(a, 1)
     end
     -- b
-    if (b:getCategory() == 2) then -- item
-        map:deleteItem(b)
+    if (b:getCategory() == 2) then -- item picked up
+        map:pickupItem(b)
     elseif (b:getCategory() == 3) then -- terminal entered
         map:playerAtTerminal(b, 1)
     end
 end
  
 function endContact(a, b, coll)
+    -- a
     if (a:getCategory() == 3) then -- terminal left
         map:playerAtTerminal(a, 0)
     end
+    -- b
     if (b:getCategory() == 3) then -- terminal left
         map:playerAtTerminal(b, 0)
     end
@@ -62,7 +64,8 @@ function love.update(dt)
 	-- need to split entity physics update from entity logic update
 	map.player:update()
 	world:update( 1 / 60 )
-
+    
+    -- check terminals for hacking
 	map:checkTerminals()
 
 end
@@ -81,7 +84,8 @@ function love.draw()
 	G.translate( W / 2, H / 2 )
 	G.rotate(0.01 + 0.01 * (1 + 0.5 * math.cos(t*0.01)))
 	G.translate( math.floor(-px + 0.5), math.floor(-py + 0.5) )
-
+    
+    -- draw stuff
 	map:draw("floor")
 	p:draw()
 	map:draw("walls")

@@ -141,11 +141,11 @@ function Map:drawTerminals()
     end
 end
 
-function Map:deleteItem(delete)
-    for _, item in pairs(self.items) do
-        if item.fixture == delete then
-            item.fixture:destroy()
-            item.static:destroy()
+function Map:pickupItem(item)
+    for _, i in pairs(self.items) do
+        if i.fixture == item then
+            i.fixture:destroy()
+            i.static:destroy()
             table.remove(self.items, _)
         end
     end
