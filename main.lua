@@ -19,6 +19,7 @@ require("map")
 require("player")
 require("item")
 require("terminal")
+require("door")
 
 function love.load()
     world = P.newWorld()
@@ -91,6 +92,7 @@ function love.draw()
 	map:draw("walls")
 	map:drawItems()
 	map:drawTerminals()
+	map:drawDoors()
 
 	if isDown("f2") then
 		draw_debug_physics()

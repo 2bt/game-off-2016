@@ -56,7 +56,9 @@ function Map:init()
     elseif layer.name == "doors" then
         for _, obj in ipairs(layer.objects) do
             if obj.name == "door" then
-            
+                local door = Door()
+                door:setActive(obj.x + obj.width / 2, obj.y + obj.height / 2, obj.width, obj.height)
+                table.insert(self.doors, door)
             end
         end
 
@@ -141,6 +143,12 @@ function Map:drawTerminals()
     end
 end
 
+function Map:drawDoors()
+    for _, door in pairs(self.doors) do
+        door:draw()
+    end
+end
+
 function Map:pickupItem(item)
     for _, i in pairs(self.items) do
         if i.fixture == item then
@@ -162,7 +170,13 @@ end
 function Map:checkTerminals()
     for _, t in pairs(self.terminals) do
         if t.playerAtTerminal == 1 and bool[isDown("e")] == 1 then
-           print("hacking")
+            for _, d in pairs(self.doors) do
+                d.fixture:destroy()
+                d.static:destroy()
+                table.remove(self.doors, _)
+            end
         end
     end
 end
+
+    
