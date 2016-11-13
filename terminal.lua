@@ -12,7 +12,7 @@ function Terminal:setActive(x,y,w,h)
     self.width = w
     self.height = h
     local static = P.newBody(world, x,y, "static")
-    local shape = P.newRectangleShape(16, 16)
+    local shape = P.newRectangleShape(w, h)
     self.fixture = P.newFixture(static, shape)
     self.fixture:setCategory(3)
     self.static = static
