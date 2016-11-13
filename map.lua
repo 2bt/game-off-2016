@@ -47,7 +47,7 @@ function Map:init()
 				
 				elseif obj.name == "terminal" then
 				    local terminal = Terminal()
-				    terminal:setActive(obj.x + obj.width / 2, obj.y + obj.height / 2, obj.width, obj.height)
+				    terminal:setActive(obj.x + obj.width / 2, obj.y + obj.height / 2, obj.width, obj.height, obj.properties.controlID)
 				    table.insert(self.terminals, terminal)
 				end
 
@@ -57,7 +57,7 @@ function Map:init()
         for _, obj in ipairs(layer.objects) do
             if obj.name == "door" then
                 local door = Door()
-                door:setActive(obj.x + obj.width / 2, obj.y + obj.height / 2, obj.width, obj.height)
+                door:setActive(obj.x + obj.width / 2, obj.y + obj.height / 2, obj.width, obj.height, obj.properties.id)
                 table.insert(self.doors, door)
             end
         end
@@ -171,9 +171,11 @@ function Map:checkTerminals()
     for _, t in pairs(self.terminals) do
         if t.playerAtTerminal == 1 and bool[isDown("e")] == 1 then
             for _, d in pairs(self.doors) do
-                d.fixture:destroy()
-                d.static:destroy()
-                table.remove(self.doors, _)
+                if t.controlID == d.id then
+                    d.fixture:destroy()
+                    d.static:destroy()
+                    table.remove(self.doors, _)
+                end
             end
         end
     end

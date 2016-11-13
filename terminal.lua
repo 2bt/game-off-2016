@@ -6,11 +6,12 @@ function Terminal:init()
     self.height = 0
 end
 
-function Terminal:setActive(x,y,w,h)
+function Terminal:setActive(x,y,w,h,controlID)
     self.x = x
     self.y = y
     self.width = w
     self.height = h
+    self.controlID = controlID
     local static = P.newBody(world, x,y, "static")
     local shape = P.newRectangleShape(w, h)
     self.fixture = P.newFixture(static, shape)

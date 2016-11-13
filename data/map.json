@@ -78,7 +78,7 @@
                  "name":"terminal",
                  "properties":
                     {
-
+                     "controlID":"1"
                     },
                  "rotation":0,
                  "type":"",
@@ -86,6 +86,21 @@
                  "width":31.8181818181818,
                  "x":1072,
                  "y":544.333333333333
+                }, 
+                {
+                 "height":17.5,
+                 "id":57,
+                 "name":"terminal",
+                 "properties":
+                    {
+                     "controlID":"2"
+                    },
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":1312.25,
+                 "y":623.5
                 }],
          "opacity":0.899999976158142,
          "type":"objectgroup",
@@ -349,7 +364,7 @@
                  "name":"door",
                  "properties":
                     {
-
+                     "id":"1"
                     },
                  "rotation":0,
                  "type":"",
@@ -357,6 +372,21 @@
                  "width":15,
                  "x":1136.91666666667,
                  "y":592.333333333333
+                }, 
+                {
+                 "height":15.75,
+                 "id":55,
+                 "name":"door",
+                 "properties":
+                    {
+                     "id":"2"
+                    },
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":47.75,
+                 "x":1200.125,
+                 "y":528.625
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -365,7 +395,7 @@
          "x":0,
          "y":0
         }],
- "nextobjectid":54,
+ "nextobjectid":58,
  "orientation":"orthogonal",
  "properties":
     {

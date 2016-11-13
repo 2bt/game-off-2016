@@ -6,11 +6,12 @@ function Door:init()
     self.height = 0
 end
 
-function Door:setActive(x,y,w,h)
+function Door:setActive(x,y,w,h, id)
     self.x = x
     self.y = y
     self.width = w
     self.height = h
+    self.id = id
     local static = P.newBody(world, x,y, "static")
     local shape = P.newRectangleShape(w, h)
     self.fixture = P.newFixture(static, shape)
