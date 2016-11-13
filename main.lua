@@ -64,8 +64,12 @@ function love.update(dt)
 
 	-- need to split entity physics update from entity logic update
 	map.player:update()
+
+	for i, door in ipairs(map.doors) do
+		door:update()
+	end
+
 	world:update( 1 / 60 )
-    
     -- check terminals for hacking
 	map:checkTerminals()
 
