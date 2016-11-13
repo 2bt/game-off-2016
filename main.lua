@@ -83,7 +83,6 @@ function love.draw()
 	local px, py = p:pos()
 
 	G.translate( W / 2, H / 2 )
-	G.rotate(0.01 + 0.01 * (1 + 0.5 * math.cos(t*0.01)))
 	G.translate( math.floor(-px + 0.5), math.floor(-py + 0.5) )
     
     -- draw stuff
