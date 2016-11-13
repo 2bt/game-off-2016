@@ -57,7 +57,7 @@ function Map:init()
         for _, obj in ipairs(layer.objects) do
             if obj.name == "door" then
                 local door = Door()
-                door:setActive(obj.x + obj.width / 2, obj.y + obj.height / 2, obj.width, obj.height, obj.properties.id)
+                door:setActive(obj.x + obj.width / 2, obj.y + obj.height / 2, obj.width, obj.height, obj.properties.id, obj.properties.state, obj.properties.dx, obj.properties.dy)
                 table.insert(self.doors, door)
             end
         end
@@ -163,18 +163,20 @@ function Map:playerAtTerminal(terminal, atTerminal)
     for _, t in pairs(self.terminals) do
         if t.fixture == terminal then
             t:setPlayerAtTerminal(atTerminal)
+            if atTerminal == 0 then
+                t.isUsed = 0
+            end
         end
     end
 end
 
 function Map:checkTerminals()
     for _, t in pairs(self.terminals) do
-        if t.playerAtTerminal == 1 and bool[isDown("e")] == 1 then
+        if t.playerAtTerminal == 1 and bool[isDown("e")] == 1 and t.isUsed == 0 then
             for _, d in pairs(self.doors) do
                 if t.controlID == d.id then
-                    d.fixture:destroy()
-                    d.static:destroy()
-                    table.remove(self.doors, _)
+                    d:changeState()
+                    t.isUsed = 1
                 end
             end
         end

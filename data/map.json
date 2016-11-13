@@ -364,7 +364,10 @@
                  "name":"door",
                  "properties":
                     {
-                     "id":"1"
+                     "dx":"0",
+                     "dy":"-40",
+                     "id":"1",
+                     "state":"closed"
                     },
                  "rotation":0,
                  "type":"",
@@ -379,7 +382,10 @@
                  "name":"door",
                  "properties":
                     {
-                     "id":"2"
+                     "dx":"60",
+                     "dy":"0",
+                     "id":"2",
+                     "state":"closed"
                     },
                  "rotation":0,
                  "type":"",
@@ -395,7 +401,7 @@
          "x":0,
          "y":0
         }],
- "nextobjectid":58,
+ "nextobjectid":60,
  "orientation":"orthogonal",
  "properties":
     {
