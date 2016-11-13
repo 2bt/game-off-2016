@@ -43,21 +43,6 @@
                  "y":560
                 }, 
                 {
-                 "height":16,
-                 "id":7,
-                 "name":"terminal",
-                 "properties":
-                    {
-
-                    },
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":32,
-                 "x":1056,
-                 "y":544
-                }, 
-                {
                  "height":0,
                  "id":46,
                  "name":"item",
@@ -86,6 +71,21 @@
                  "width":0,
                  "x":1225,
                  "y":506
+                }, 
+                {
+                 "height":15.6666666666667,
+                 "id":50,
+                 "name":"terminal",
+                 "properties":
+                    {
+
+                    },
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16.3333333333333,
+                 "x":1072,
+                 "y":544.333333333333
                 }],
          "opacity":0.899999976158142,
          "type":"objectgroup",
@@ -337,8 +337,35 @@
          "width":200,
          "x":0,
          "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "height":100,
+         "name":"doors",
+         "objects":[
+                {
+                 "height":31.3333333333334,
+                 "id":53,
+                 "name":"door",
+                 "properties":
+                    {
+
+                    },
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":15,
+                 "x":1136.91666666667,
+                 "y":592.333333333333
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "width":200,
+         "x":0,
+         "y":0
         }],
- "nextobjectid":48,
+ "nextobjectid":54,
  "orientation":"orthogonal",
  "properties":
     {

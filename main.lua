@@ -17,7 +17,8 @@ love.mouse.setVisible(false)
 require("helper")
 require("map")
 require("player")
-require("items")
+require("item")
+require("terminal")
 
 function love.load()
     world = P.newWorld()
@@ -26,10 +27,27 @@ function love.load()
 end
 
 function beginContact(a, b, coll)
-    map:deleteItem(b)
+    -- a
+    if (a:getCategory() == 2) then -- item
+        map:deleteItem(a)
+    elseif (a:getCategory() == 3) then -- terminal entered
+        map:playerAtTerminal(a, 1)
+    end
+    -- b
+    if (b:getCategory() == 2) then -- item
+        map:deleteItem(b)
+    elseif (b:getCategory() == 3) then -- terminal entered
+        map:playerAtTerminal(b, 1)
+    end
 end
  
 function endContact(a, b, coll)
+    if (a:getCategory() == 3) then -- terminal left
+        map:playerAtTerminal(a, 0)
+    end
+    if (b:getCategory() == 3) then -- terminal left
+        map:playerAtTerminal(b, 0)
+    end
 end
  
 function preSolve(a, b, coll)
@@ -44,6 +62,8 @@ function love.update(dt)
 	-- need to split entity physics update from entity logic update
 	map.player:update()
 	world:update( 1 / 60 )
+
+	map:checkTerminals()
 
 end
 
@@ -62,12 +82,11 @@ function love.draw()
 	G.rotate(0.01 + 0.01 * (1 + 0.5 * math.cos(t*0.01)))
 	G.translate( math.floor(-px + 0.5), math.floor(-py + 0.5) )
 
-
-
 	map:draw("floor")
 	p:draw()
 	map:draw("walls")
 	map:drawItems()
+	map:drawTerminals()
 
 	if isDown("f2") then
 		draw_debug_physics()

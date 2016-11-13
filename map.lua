@@ -19,6 +19,8 @@ function Map:init()
 	self.layers = {}
     self.body_static = P.newBody( world, 0, 0 )
     self.items = {}
+    self.terminals = {}
+    self.doors = {}
 
 	for _, layer in pairs(data.layers) do
 
@@ -42,10 +44,21 @@ function Map:init()
                     local item = Item()
                     item:setActive(obj.x + obj.width / 2, obj.y + obj.height / 2)
                     table.insert(self.items, item)
+				
+				elseif obj.name == "terminal" then
+				    local terminal = Terminal()
+				    terminal:setActive(obj.x + obj.width / 2, obj.y + obj.height / 2)
+				    table.insert(self.terminals, terminal)
 				end
 
 			end
 
+    elseif layer.name == "doors" then
+        for _, obj in ipairs(layer.objects) do
+            if obj.name == "door" then
+            
+            end
+        end
 
 
     elseif layer.name == "physics_walls" then
@@ -122,6 +135,12 @@ function Map:drawItems()
     end
 end
 
+function Map:drawTerminals()
+    for _, terminal in pairs(self.terminals) do
+        terminal:draw()
+    end
+end
+
 function Map:deleteItem(delete)
     for _, item in pairs(self.items) do
         if item.fixture == delete then
@@ -132,3 +151,18 @@ function Map:deleteItem(delete)
     end
 end
 
+function Map:playerAtTerminal(terminal, atTerminal)
+    for _, t in pairs(self.terminals) do
+        if t.fixture == terminal then
+            t:setPlayerAtTerminal(atTerminal)
+        end
+    end
+end
+
+function Map:checkTerminals()
+    for _, t in pairs(self.terminals) do
+        if t.playerAtTerminal == 1 and bool[isDown("e")] == 1 then
+           print("hacking")
+        end
+    end
+end
