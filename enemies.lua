@@ -19,7 +19,7 @@ function StupidEnemy:init( obj )
 	self.ai_state  = nil
 	self.ai_debug  = {}
 
-	print( "StupidEnemy:init" )
+	print( "StupidEnemy:init "..tostring(self.name) )
 end
 
 function StupidEnemy:update()
@@ -39,20 +39,24 @@ function StupidEnemy:draw()
 	G.circle( "fill", x, y, self.radius )
 	
 	if isDown( "f3" ) then
-		G.setColor( 255, 0, 0 )
-		for _, stuff in ipairs( self.ai_debug ) do
-			local t, x1, y1, x2, y2  = unpack( stuff )
-			if t == "dot" then
-				G.circle( "fill", x1, y1, 3 )
-			elseif t == "line" then
-				G.line( x1, y1, x2, y2 )
-			end
-		end
-		self.ai_debug = {}
-	end
+	  self:draw_debug_ai()
+  end
 end
 
 
+
+function StupidEnemy:draw_debug_ai()
+  G.setColor( 255, 0, 0 )
+  for _, stuff in ipairs( self.ai_debug ) do
+    local t, x1, y1, x2, y2  = unpack( stuff )
+    if t == "dot" then
+      G.circle( "fill", x1, y1, 3 )
+    elseif t == "line" then
+      G.line( x1, y1, x2, y2 )
+    end
+  end
+  self.ai_debug = {}
+end
 
 function StupidEnemy:change_ai_state( state )
 	if self.ai_state == state then return end

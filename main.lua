@@ -4,6 +4,7 @@ P = love.physics
 print( "# game-off-2016" )
 print( "#" )
 print( "# hit F2 for draw_debug_physics" )
+print( "# hit F3 for draw_debug_ai" )
 print()
 
 -- init technical stuff
