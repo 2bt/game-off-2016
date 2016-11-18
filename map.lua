@@ -3,16 +3,8 @@ local json = require("dkjson")
 
 Map = Object:new()
 function Map:init()
-
-	local raw = love.filesystem.read("data/map.json")
-	local data = json.decode(raw)
-
-
-	self.tileset = G.newImage("data/tileset.png")
-	self.quads = makeQuads(self.tileset:getWidth(), self.tileset:getHeight(), 16)
-	self.w = data.width
-	self.h = data.height
-
+	self.img_tileset = G.newImage("data/tileset.png")
+	self.quads = makeQuads(self.img_tileset:getWidth(), self.img_tileset:getHeight(), 16)
 
 	self.player = Player()
 	self.layers = {}
@@ -20,16 +12,74 @@ function Map:init()
 	self.items = {}
 	self.terminals = {}
 	self.doors = {}
+	self.gfxlayers = {}
 	self:objects_init()
+end
+
+--[[ map.json
+	data
+		tilesets
+			tiles
+				*tileid: { terrain: [ #terrains ] }
+			terrains
+				name
+				tile
+				properties
+		layers [
+			data: [ *tileid ]
+]]--
+
+function Map:tileset( tileid )
+	return self.data.tilesets[1]
+end
+
+function Map:__tile_gfxlayer( tileid )
+	local tileset = self:tileset( tileid )
+	local tileprops = tileset.tiles[ tostring(tileid-1) ]
+	if not tileprops or not tileprops.terrain then return "floor" end
+	for _, terrain_i in ipairs( tileprops.terrain ) do
+		local terrain = tileset.terrains[ terrain_i+1 ]
+		if terrain.properties and terrain.properties.wall then
+			return "wall"
+		end
+	end
+	return "floor" -- default case
+end
+
+function Map:tile_gfxlayer( tileid )
+	local cache = self.tile_gfxlayer_cache
+	if not cache then
+		cache = {}
+		self.tile_gfxlayer_cache = cache
+	end
+	local gfxlayer = cache[ tileid ]
+	if not gfxlayer then
+		gfxlayer = self:__tile_gfxlayer( tileid )
+		cache[ tileid ] = gfxlayer
+	end
+	return gfxlayer
+end
+
+function Map:load_json_map( path )
+	local raw = love.filesystem.read( path )
+	local data = json.decode(raw)
+	self.data = data
+	self.w = data.width
+	self.h = data.height
+
+	print("Map:load_json_map", path)
 
 	for _, layer in pairs(data.layers) do
 
-
 		if layer.type == "tilelayer" then
-
-			self.layers[layer.name] = layer.data
-
-
+			for index, tileid in ipairs( layer.data ) do
+				local gfxlayer = self:tile_gfxlayer( tileid )
+				if not self.gfxlayers[ gfxlayer ] then
+					self.gfxlayers[ gfxlayer ] = {}
+					print( "gfxlayer", gfxlayer )
+				end
+				table.insert( self.gfxlayers[ gfxlayer ], { index-1, tileid } )
+			end
 
 
 		elseif layer.name == "entities" then
@@ -141,51 +191,51 @@ end
 
 
 
+function Map:draw( layername )
 
-function Map:draw(layername)
+	local layer = self.gfxlayers[ layername ]
+	local w = self.w
+	local h = self.h
 
+	-- draw only tiles in view (and view is something too simple)
+	local px, py = self.player:pos()
+	local min_x = px - 16*11
+	local max_x = px + 16*10
+	local min_y = py - 16*8
+	local max_y = py + 16*7
 
-
-	local layer = self.layers[layername or "walls"]
-    
-    if layername == "walls" then
-			G.setColor( 255, 255, 255 )
-	    for y = 0, self.h-1 do
-		    for x = 0, self.w-1 do
-
-			    local cell = layer[y * self.w + x + 1]
-			    if cell > 0 then
-
-				    G.draw(self.tileset, self.quads[cell], x * 16, y * 16)
-
-			    end
-
-
-		    end
-	    end
+	local img_tileset = self.img_tileset
+	local quads = self.quads
+	G.setColor( 255, 255, 255 )
+	for _, tile in ipairs( layer ) do
+		local index = tile[ 1 ]
+		local tileid = tile[ 2 ]
+		local x = index % w * 16
+		local y = math.floor( index / w ) * 16
+		if tileid > 0 and min_x <= x and x <= max_x and min_y <= y and y <= max_y then
+			G.draw( img_tileset, quads[ tileid ], x, y )
+		end
+		G.setColor( 255, 255, 255 )
+	end
 
 	-- shadow
-	elseif layername == "floor" then
-
+	if layername == "floor" then
+		local layer = self.gfxlayers.wall
+		local w = self.w
+		local h = self.h
 		G.setColor(0, 0, 0, 70)
-		local layer = self.layers.walls
-
-		for y = 0, self.h-1 do
-			for x = 0, self.w-1 do
-
-				local cell = layer[y * self.w + x + 1]
-				if cell > 0 then
-
-					G.rectangle("fill", x * 16 + 3, y * 16 + 3, 16, 16)
-
-				end
-
-
+		for _, tile in ipairs( layer ) do
+			local index = tile[ 1 ]
+			local tileid = tile[ 2 ]
+			local x = index % w
+			local y = math.floor( index / w )
+			if tileid > 0 then
+				G.rectangle("fill", x * 16 + 3, y * 16 + 3, 16, 16)
 			end
 		end
 
 		G.setColor(255, 255, 255)
-    end
+	end
 end
 
 function Map:drawItems()
