@@ -442,10 +442,6 @@
          "terrains":[
                 {
                  "name":"basic floor",
-                 "properties":
-                    {
-                     "foo":"1"
-                    },
                  "tile":2
                 }, 
                 {
@@ -462,21 +458,6 @@
                 }],
          "tilecount":256,
          "tileheight":16,
-         "tileproperties":
-            {
-             "2":
-                {
-                 "bar":"2"
-                },
-             "3":
-                {
-                 "layer":"wall"
-                },
-             "33":
-                {
-                 "layer":"wall"
-                }
-            },
          "tiles":
             {
              "1":
