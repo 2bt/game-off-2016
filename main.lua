@@ -81,7 +81,7 @@ function beginContact(a, b, coll)
         map:pickupItem(a)
     elseif (a:getUserData() == "terminal") and (b:getUserData() == "player") then -- terminal entered
         map:playerAtTerminal(a, 1)
-    elseif (a:getUserData() == "enemy" and b:getUserData() == "player") then
+    elseif (a:getUserData() == "enemy" and b:getUserData() == "player" and map.player.isControlling == false) then
         map:playerDead()
     end
     -- b
@@ -89,7 +89,7 @@ function beginContact(a, b, coll)
         map:pickupItem(b)
     elseif (b:getUserData() == "terminal") and (a:getUserData() == "player") then -- terminal entered
         map:playerAtTerminal(b, 1)
-    elseif (b:getUserData() == "enemy" and a:getUserData() == "player") then
+    elseif (b:getUserData() == "enemy" and a:getUserData() == "player" and map.player.isControlling == false) then
         map:playerDead()
     end
 end

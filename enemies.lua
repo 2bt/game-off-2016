@@ -72,6 +72,7 @@ function StupidEnemy:update()
         if isDown("escape") then
             self.isBeingControlled = false
             map.player.isControlling = false
+            map.player.fixture:setSensor(false)
         end
 
 	end

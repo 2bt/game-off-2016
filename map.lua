@@ -285,6 +285,7 @@ function Map:checkTerminals()
                 if t.controlID == e.id then
                     t.isUsed = 1
                     self.player.isControlling = true
+                    self.player.fixture:setSensor(true)
                     e.isBeingControlled = true
                 end
 			end
