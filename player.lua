@@ -113,7 +113,6 @@ function Player:update()
 				for _, d in pairs(map.doors) do
 					if self.terminal.controlID == d.id then
 						d:changeState()
-						break
 					end
 				end
 				for _, o in pairs(map.objects) do
