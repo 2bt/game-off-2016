@@ -44,7 +44,7 @@ function beginContact(a, b, coll)
         map:playerAtTerminal(b, 1)
     end
 end
- 
+
 function endContact(a, b, coll)
     -- a
     if (a:getUserData() == "terminal") then -- terminal left
@@ -55,10 +55,10 @@ function endContact(a, b, coll)
         map:playerAtTerminal(b, 0)
     end
 end
- 
+
 function preSolve(a, b, coll)
 end
- 
+
 function postSolve(a, b, coll, normalimpulse, tangentimpulse)
 end
 
@@ -92,23 +92,21 @@ function love.draw()
 
 	G.translate( W / 2, H / 2 )
 	G.translate( math.floor(-px + 0.5), math.floor(-py + 0.5) )
-    
+
     -- draw stuff
-    G.setColor( 255, 255, 255 )
 	map:draw("floor")
-	G.setColor( 255, 255, 255 )
-	map:draw("wall")
-	G.setColor( 255, 255, 255 )
+
+	map:draw("walls")
+
 	map:drawItems()
-	G.setColor( 255, 255, 255 )
+
 	map:drawTerminals()
-	G.setColor( 255, 255, 255 )
+
 	map:drawDoors()
-	G.setColor( 255, 255, 255 )
+
 	p:draw()
-	G.setColor( 255, 255, 255 )
+
 	map:objects_call( "draw" )
-	G.setColor( 255, 255, 255 )
 
 	if isDown("f2") then
 		draw_debug_physics()

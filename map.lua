@@ -1,10 +1,13 @@
+-- vim: set tabstop=4 shiftwidth=4 noexpandtab
+
 local json = require("dkjson")
 
+TILE_SIZE = 16
 
 Map = Object:new()
 function Map:init()
 	self.img_tileset = G.newImage("data/tileset.png")
-	self.quads = makeQuads(self.img_tileset:getWidth(), self.img_tileset:getHeight(), 16)
+	self.quads = makeQuads(self.img_tileset:getWidth(), self.img_tileset:getHeight(), TILE_SIZE)
 
 	self.player = Player()
 	self.layers = {}
@@ -12,7 +15,8 @@ function Map:init()
 	self.items = {}
 	self.terminals = {}
 	self.doors = {}
-	self.gfxlayers = {}
+--	self.gfxlayers = {}
+
 	self:objects_init()
 end
 
@@ -29,36 +33,36 @@ end
 			data: [ *tileid ]
 ]]--
 
-function Map:tileset( tileid )
-	return self.data.tilesets[1]
-end
+--function Map:tileset( tileid )
+--	return self.data.tilesets[1]
+--end
+--
+--function Map:__tile_gfxlayer( tileid )
+--	local tileset = self:tileset( tileid )
+--	local tileprops = tileset.tiles[ tostring(tileid-1) ]
+--	if not tileprops or not tileprops.terrain then return "floor" end
+--	for _, terrain_i in ipairs( tileprops.terrain ) do
+--		local terrain = tileset.terrains[ terrain_i+1 ]
+--		if terrain.properties and terrain.properties.wall then
+--			return "wall"
+--		end
+--	end
+--	return "floor" -- default case
+--end
 
-function Map:__tile_gfxlayer( tileid )
-	local tileset = self:tileset( tileid )
-	local tileprops = tileset.tiles[ tostring(tileid-1) ]
-	if not tileprops or not tileprops.terrain then return "floor" end
-	for _, terrain_i in ipairs( tileprops.terrain ) do
-		local terrain = tileset.terrains[ terrain_i+1 ]
-		if terrain.properties and terrain.properties.wall then
-			return "wall"
-		end
-	end
-	return "floor" -- default case
-end
-
-function Map:tile_gfxlayer( tileid )
-	local cache = self.tile_gfxlayer_cache
-	if not cache then
-		cache = {}
-		self.tile_gfxlayer_cache = cache
-	end
-	local gfxlayer = cache[ tileid ]
-	if not gfxlayer then
-		gfxlayer = self:__tile_gfxlayer( tileid )
-		cache[ tileid ] = gfxlayer
-	end
-	return gfxlayer
-end
+--function Map:tile_gfxlayer( tileid )
+--	local cache = self.tile_gfxlayer_cache
+--	if not cache then
+--		cache = {}
+--		self.tile_gfxlayer_cache = cache
+--	end
+--	local gfxlayer = cache[ tileid ]
+--	if not gfxlayer then
+--		gfxlayer = self:__tile_gfxlayer( tileid )
+--		cache[ tileid ] = gfxlayer
+--	end
+--	return gfxlayer
+--end
 
 function Map:load_json_map( path )
 	local raw = love.filesystem.read( path )
@@ -72,62 +76,81 @@ function Map:load_json_map( path )
 	for _, layer in pairs(data.layers) do
 
 		if layer.type == "tilelayer" then
-			for index, tileid in ipairs( layer.data ) do
-				local gfxlayer = self:tile_gfxlayer( tileid )
-				if not self.gfxlayers[ gfxlayer ] then
-					self.gfxlayers[ gfxlayer ] = {}
-					print( "gfxlayer", gfxlayer )
-				end
-				table.insert( self.gfxlayers[ gfxlayer ], { index-1, tileid } )
-			end
+			self.layers[ layer.name ] = layer.data
+
+--			for index, tileid in ipairs( layer.data ) do
+--				local gfxlayer = self:tile_gfxlayer( tileid )
+--				if not self.gfxlayers[ gfxlayer ] then
+--					self.gfxlayers[ gfxlayer ] = {}
+--					print( "gfxlayer", gfxlayer )
+--				end
+--				table.insert( self.gfxlayers[ gfxlayer ], { index-1, tileid } )
+--			end
 
 
 		elseif layer.name == "entities" then
 			for _, obj in ipairs(layer.objects) do
 
 				if obj.name == "player" then
-										local x = obj.x + obj.width / 2
-										local y = obj.y + obj.height / 2
-										self.player:setPos( x, y )
+					local x = obj.x + obj.width / 2
+					local y = obj.y + obj.height / 2
+					self.player:setPos( x, y )
 
-								elseif obj.name == "item" then
-										local item = Item()
-										item:setActive(obj.x + obj.width / 2, obj.y + obj.height / 2, obj.width, obj.height)
-										table.insert(self.items, item)
+				elseif obj.name == "item" then
+					local item = Item()
+					item:setActive(obj.x + obj.width / 2, obj.y + obj.height / 2, obj.width, obj.height)
+					table.insert(self.items, item)
 
 				elseif obj.name == "terminal" then
-						local terminal = Terminal()
-						terminal:setActive(obj.x + obj.width / 2, obj.y + obj.height / 2, obj.width, obj.height, obj.properties.controlID)
-						table.insert(self.terminals, terminal)
+					local terminal = Terminal()
+					terminal:setActive(
+							obj.x + obj.width / 2,
+							obj.y + obj.height / 2,
+							obj.width,
+							obj.height,
+							obj.properties.controlID)
+					table.insert(self.terminals, terminal)
 				end
-
 			end
 
 		elseif layer.name == "doors" then
-				for _, obj in ipairs(layer.objects) do
-						if obj.name == "door" then
-								local door = Door()
-								door:setActive(obj.x + obj.width / 2, obj.y + obj.height / 2, obj.width, obj.height, obj.properties.id, obj.properties.state, obj.properties.dx, obj.properties.dy)
-								table.insert(self.doors, door)
-						end
+			for _, obj in ipairs(layer.objects) do
+				if obj.name == "door" then
+					local door = Door()
+					door:setActive(
+							obj.x + obj.width / 2,
+							obj.y + obj.height / 2,
+							obj.width,
+							obj.height,
+							obj.properties.id,
+							obj.properties.state,
+							obj.properties.dx,
+							obj.properties.dy)
+					table.insert(self.doors, door)
 				end
+			end
 
 
 		elseif layer.name == "physics_walls" then
 			for _, obj in ipairs(layer.objects) do
 
-				if obj.polyline then
+				if obj.polygon then
 					local points = {}
-					for _, point in ipairs(obj.polyline) do
+					for _, point in ipairs(obj.polygon) do
 						table.insert( points, point.x + obj.x )
 						table.insert( points, point.y + obj.y )
 					end
-					local shape	 = P.newChainShape( false, points )
+					local shape	 = P.newPolygonShape( points )
 					local fixture = P.newFixture( self.body_static, shape )
 					fixture:setUserData( "wall" )
 
 				else -- rectangle
-					local shape	 = P.newRectangleShape( obj.x + obj.width/2, obj.y + obj.height/2, obj.width, obj.height, obj.rotation )
+					local shape = P.newRectangleShape(
+							obj.x + obj.width/2,
+							obj.y + obj.height/2,
+							obj.width,
+							obj.height,
+							obj.rotation )
 					local fixture = P.newFixture( self.body_static, shape )
 					fixture:setUserData( "wall" )
 
@@ -193,49 +216,62 @@ end
 
 function Map:draw( layername )
 
-	local layer = self.gfxlayers[ layername ]
-	local w = self.w
-	local h = self.h
 
 	-- draw only tiles in view (and view is something too simple)
 	local px, py = self.player:pos()
-	local min_x = px - 16*11
-	local max_x = px + 16*10
-	local min_y = py - 16*8
-	local max_y = py + 16*7
+	local min_x = math.floor(px / TILE_SIZE) - 11
+	local max_x = math.floor(px / TILE_SIZE) + 10
+	local min_y = math.floor(py / TILE_SIZE) - 8
+	local max_y = math.floor(py / TILE_SIZE) + 7
 
-	local img_tileset = self.img_tileset
-	local quads = self.quads
-	G.setColor( 255, 255, 255 )
-	for _, tile in ipairs( layer ) do
-		local index = tile[ 1 ]
-		local tileid = tile[ 2 ]
-		local x = index % w * 16
-		local y = math.floor( index / w ) * 16
-		if tileid > 0 and min_x <= x and x <= max_x and min_y <= y and y <= max_y then
-			G.draw( img_tileset, quads[ tileid ], x, y )
-		end
-		G.setColor( 255, 255, 255 )
-	end
 
-	-- shadow
-	if layername == "floor" then
-		local layer = self.gfxlayers.wall
-		local w = self.w
-		local h = self.h
-		G.setColor(0, 0, 0, 70)
-		for _, tile in ipairs( layer ) do
-			local index = tile[ 1 ]
-			local tileid = tile[ 2 ]
-			local x = index % w
-			local y = math.floor( index / w )
-			if tileid > 0 then
-				G.rectangle("fill", x * 16 + 3, y * 16 + 3, 16, 16)
+	G.setColor(255, 255, 255)
+
+	local layer = self.layers[ layername ]
+	for iy = min_y, max_y do
+		for ix = min_x, max_x do
+
+			local tileid = layer[ iy * self.w + ix + 1 ]
+			if tileid and tileid > 0 then
+				G.draw( self.img_tileset,
+						self.quads[ tileid ],
+						ix * TILE_SIZE,
+						iy * TILE_SIZE )
 			end
 		end
-
-		G.setColor(255, 255, 255)
 	end
+
+
+--	for _, tile in ipairs( layer ) do
+--		local index = tile[ 1 ]
+--		local tileid = tile[ 2 ]
+--		local x = index % w * TILE_SIZE
+--		local y = math.floor( index / w ) * TILE_SIZE
+--		if tileid > 0 and min_x <= x and x <= max_x and min_y <= y and y <= max_y then
+--			G.draw( self.img_tileset, quads[ tileid ], x, y )
+--		end
+--	end
+
+
+
+	-- shadow
+--	if layername == "floor" then
+--		local layer = self.layers.wall
+--		local w = self.w
+--		local h = self.h
+--		G.setColor(0, 0, 0, 70)
+--		for _, tile in ipairs( layer ) do
+--			local index = tile[ 1 ]
+--			local tileid = tile[ 2 ]
+--			local x = index % w
+--			local y = math.floor( index / w )
+--			if tileid > 0 then
+--				G.rectangle("fill", x * TILE_SIZE + 3, y * TILE_SIZE + 3, TILE_SIZE, TILE_SIZE)
+--			end
+--		end
+--
+--		G.setColor(255, 255, 255)
+--	end
 end
 
 function Map:drawItems()
