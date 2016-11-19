@@ -2,6 +2,12 @@
 
 local json = require("dkjson")
 
+-- wall userdata for fixture
+local wallUserData = {
+	type = "wall"
+}
+
+
 TILE_SIZE = 16
 
 Map = Object:new()
@@ -91,7 +97,7 @@ function Map:load_json_map( path )
 					end
 					local shape	 = P.newPolygonShape( points )
 					local fixture = P.newFixture( self.body_static, shape )
-					fixture:setUserData( "wall" )
+					fixture:setUserData( wallUserData )
 
 				else -- rectangle
 					local shape = P.newRectangleShape(
@@ -101,7 +107,7 @@ function Map:load_json_map( path )
 							obj.height,
 							obj.rotation )
 					local fixture = P.newFixture( self.body_static, shape )
-					fixture:setUserData( "wall" )
+					fixture:setUserData( wallUserData )
 
 				end
 			end
@@ -116,24 +122,11 @@ function Map:load_json_map( path )
 
 end
 
-function Map:update()
-    if self.player.isDead == true then
-        if bool[isDown("return")] == 1 or bool[isDown("kpenter")] == 1 then
-            self:restart()
-        end
-    else
-        self.player:update()
-        -- check terminals for hacking
-	    self:checkTerminals()
-    end
-
-    self:objects_call( "update" )
-end
 
 function Map:restart()
-	self.player = {} 
+	self.player = {}
 	self.layers = {}
-	self.body_static ={}	
+	self.body_static ={}
 	self.items = {}
 	self.terminals = {}
 	self.doors = {}
@@ -170,13 +163,6 @@ function Map:objects_register( type_name, constructor )
 	self.object_types[ type_name ] = constructor
 end
 
-function Map:objects_call( func_name )
-	for _, obj in ipairs( self.objects ) do
-		if obj[ func_name ] then
-			obj[ func_name ]( obj )
-		end
-	end
-end
 
 Dummy = Object:new()
 function Dummy:init( obj )
@@ -185,7 +171,7 @@ end
 
 function Map:setCamera(W, H)
     self.px, self.py = self.player:pos()
-	if self.player.isControlling == true then 
+	if self.player.isControlling == true then
         for _, enemy in pairs(self.objects) do
             if enemy.isBeingControlled == true then
                 self.px, self.py = enemy:pos()
@@ -224,63 +210,13 @@ function Map:draw( layername )
 
 end
 
-function Map:drawItems()
-	for _, item in pairs(self.items) do
-		item:draw()
-	end
-end
-
-function Map:drawTerminals()
-	for _, terminal in pairs(self.terminals) do
-		terminal:draw()
-	end
-end
-
-function Map:drawDoors()
-	for _, door in pairs(self.doors) do
-		door:draw()
-	end
-end
-
-function Map:pickupItem(item)
-	for _, i in pairs(self.items) do
-		if i.fixture == item then
-			i.fixture:destroy()
-			i.static:destroy()
-			table.remove(self.items, _)
+function Map:removeItem(item)
+	for i, it in pairs(self.items) do
+		if it == item then
+			it.fixture:destroy()
+			it.static:destroy()
+			table.remove(self.items, i)
+			return
 		end
 	end
 end
-
-function Map:playerDead()
-    self.player.fixture:setSensor(true)
-    self.player.body:setLinearVelocity(0,0)
-    self.player.isDead = true
-end
-
-function Map:playerAtTerminal(terminal, atTerminal)
-	for _, t in pairs(self.terminals) do
-		if t.fixture == terminal then
-			t:setPlayerAtTerminal(atTerminal)
-		end
-	end
-end
-
-function Map:checkTerminals()
-	for _, t in pairs(self.terminals) do
-
-		if t.isUsed == 1 and bool[isDown("e")] == 0 then
-			t.isUsed = 0
-		end
-
-		if t.playerAtTerminal == 1 and bool[isDown("e")] == 1 and t.isUsed == 0 then
-			for _, d in pairs(self.doors) do
-				if t.controlID == d.id then
-					d:changeState()
-					t.isUsed = 1
-				end
-			end
-		end
-	end
-end
-

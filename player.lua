@@ -8,10 +8,12 @@ local dude_quads = {
 	q[4], q[5] -- hack
 }
 
-Player = Object:new()
+Player = Object:new {
+	type = "player"
+}
 function Player:init()
 	self.timer = 0
-	self.anim_img = 1
+	self.frame = 1
 	self.ang = 0
 
 	local body    = P.newBody( world, 0, 0, "dynamic" )
@@ -20,24 +22,31 @@ function Player:init()
 	local fixture = P.newFixture( body, shape )
 	body:setFixedRotation( true )
 	--body:setMass( 1 ) -- not necessary right now
-	fixture:setUserData( "player" )
+	fixture:setUserData(self)
 	self.body     = body
 	self.fixture  = fixture
     self.isDead   = false
     self.isControlling = false
 
+	self.terminal = nil
+	self.hacking_progress = 0
 end
 
 function Player:setPos( x, y )
 	self.body:setX( x )
 	self.body:setY( y )
-	self.x = x
-	self.y = y
 end
 
 function Player:pos()
 	return self.body:getX(), self.body:getY()
 end
+
+function Player:kill()
+    self.fixture:setSensor(true)
+    self.body:setLinearVelocity(0,0)
+    self.isDead = true
+end
+
 
 function Player:update()
 	-- need to split entity physics update from entity logic update
@@ -57,11 +66,56 @@ function Player:update()
 
 	local ix = 0
 	local iy = 0
-	-- can't move while hacking
-	if not input.hack then
+	if input.hack then
+
+		if not self.terminal and not self.old_hack then
+			-- find touching terminal
+			for _, contact in pairs(self.fixture:getBody():getContactList()) do
+				for _, f in ipairs({ contact:getFixtures() }) do
+					local obj = f:getUserData()
+					if obj.type == "terminal" then
+						self.terminal = obj
+
+						local cx, cy = contact:getPositions() -- ignore the 2nd point
+						if cx then
+							local px, py = self:pos()
+							self.ang = math.atan2(cx - px, py - cy)
+						end
+
+						break
+					end
+					if self.terminal then break end
+				end
+			end
+		end
+
+
+		if self.terminal and self.old_hack then
+			-- TODO: progress bar
+			self.hacking_progress = self.hacking_progress + 1
+			if self.hacking_progress > 50 then
+				self.hacking_progress = 0
+				-- FIXME
+				input.hack = false
+				for _, d in pairs(map.doors) do
+					if self.terminal.controlID == d.id then
+						d:changeState()
+						break
+					end
+				end
+
+			end
+		end
+
+	else
+		self.terminal = nil
+
 		ix = input.ix * (1 + bool[ input.run ] * 0.5)
 		iy = input.iy * (1 + bool[ input.run ] * 0.5)
 	end
+
+
+	self.old_hack = input.hack
 
 	local v_max       = 85
 	local accel_max   = 8.5
@@ -84,14 +138,15 @@ function Player:update()
 
 	self.timer = self.timer + 0.016
 
+	-- animation
 
 	if ix ~= 0 or iy ~= 0 then
-		self.anim_img = 1 + math.floor( ( self.timer / 0.15 ) % 4 )
+		self.frame = 1 + math.floor( ( self.timer / 0.15 ) % 4 )
 	else
-		self.anim_img = 1
+		self.frame = 1
 	end
 	if input.hack then
-		self.anim_img = 5 + math.floor( ( self.timer / 0.1 ) % 2 )
+		self.frame = 5 + math.floor( ( self.timer / 0.1 ) % 2 )
 	end
 
 	--if vx ~= 0 or vy ~= 0 or accel_x ~= 0 or accel_y ~= 0 then
@@ -108,7 +163,7 @@ function Player:draw()
 	G.translate(x, y)
 	G.rotate(self.ang)
 	G.setColor( 255, 255, 255 )
-	G.draw( dude_img, dude_quads[ self.anim_img ], -8, -8 )
+	G.draw( dude_img, dude_quads[ self.frame ], -8, -8 )
 	--G.setColor( 255, 192, 192 )
 	--G.rectangle( "fill", -5, -3, 10, 6 )
 	G.pop()

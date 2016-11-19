@@ -59,6 +59,7 @@ end
 local function defaultFilterPredicate(item)
 	return not item.alive
 end
+
 function updateList(x, removalPredicate)
 	removalPredicate = removalPredicate or defaultFilterPredicate
 	local i = 1
@@ -108,3 +109,7 @@ function rayBoxIntersection(ox, oy, dx, dy, box)
 	return false
 end
 
+
+function drawList(list)
+	for _, o in ipairs(list) do o:draw() end
+end

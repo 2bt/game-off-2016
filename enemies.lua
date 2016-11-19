@@ -1,7 +1,8 @@
 
+StupidEnemy = Object:new {
+	type = "enemy"
+}
 
-
-StupidEnemy = Object:new()
 function StupidEnemy:init( obj )
 	self.name = obj.name
 	self.type = obj.type
@@ -10,7 +11,7 @@ function StupidEnemy:init( obj )
 	local radius  = math.max( 8, math.max( obj.width, obj.height ) )
 	local shape   = P.newCircleShape( radius )
 	local fixture = P.newFixture( body, shape )
-	fixture:setUserData("enemy")
+	fixture:setUserData(self)
 	body:setMass( 1 )
 	body:setLinearDamping( 4, 4 )
 	self.body     = body
@@ -67,7 +68,7 @@ function StupidEnemy:draw()
 	local x, y = self.body:getPosition()
 	G.setColor( 96, 96, 96 )
 	G.circle( "fill", x, y, self.radius )
-	
+
 	if isDown( "f3" ) then
 	  self:draw_debug_ai()
   end
@@ -101,19 +102,19 @@ function StupidEnemy:update_find_target()
 	if not player then return end
 	local x1, y1 = self.body:getPosition()
 	local x2, y2 = player:pos()
-	
+
 	if isDown( "f3" ) then
 		table.insert( self.ai_debug, { "line", x1, y1, x2, y2 } )
 	end
-	
+
 	world:rayCast( x1, y1, x2, y2,
 		function( fixture, x, y, xn, yn, fraction )
 			if isDown( "f3" ) then
 				table.insert( self.ai_debug, { "dot", x, y } )
 			end
-		
+
 			local user_data = fixture:getUserData()
-			if user_data == "wall" or user_data == "door" then
+			if user_data.type == "wall" or user_data.type == "door" then
 				self.ai_target = nil
 				return 0
 			elseif user_data == "player" then

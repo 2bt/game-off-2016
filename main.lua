@@ -43,12 +43,13 @@ function shadow:draw()
 	G.translate(3, 3)
 
 	-- draw everything that casts a shadow
-	map:draw("walls")
-	map:drawDoors()
-	map:drawItems()
-	map:drawTerminals()
+	drawList(map.doors)
+	drawList(map.terminals)
+	drawList(map.items)
+	drawList(map.objects)
 	map.player:draw()
-	map:objects_call( "draw" )
+	map:draw("walls")
+
 
 	G.pop()
 	G.setShader()
@@ -75,34 +76,26 @@ function loadWorld()
 	map:load_json_map( lastMap )
 end
 
+
 function beginContact(a, b, coll)
-    -- a
-    if (a:getUserData() == "item") and (b:getUserData() == "player") then -- item picked up
-        map:pickupItem(a)
-    elseif (a:getUserData() == "terminal") and (b:getUserData() == "player") then -- terminal entered
-        map:playerAtTerminal(a, 1)
-    elseif (a:getUserData() == "enemy" and b:getUserData() == "player") then
-        map:playerDead()
-    end
-    -- b
-    if (b:getUserData() == "item") and (a:getUserData() == "player") then -- item picked up
-        map:pickupItem(b)
-    elseif (b:getUserData() == "terminal") and (a:getUserData() == "player") then -- terminal entered
-        map:playerAtTerminal(b, 1)
-    elseif (b:getUserData() == "enemy" and a:getUserData() == "player") then
-        map:playerDead()
-    end
+	for i = 1, 2 do
+		local o1 = a:getUserData()
+		local o2 = b:getUserData()
+
+		if o1.type == "item" and o2.type == "player" then -- item picked up
+			map:removeItem(o1)
+		elseif o1.type == "enemy" and o2.type == "player" then
+			map.player:kill()
+		end
+		a, b = b, a 	-- try the other direction
+	end
 end
 
 function endContact(a, b, coll)
-    -- a
-    if (a:getUserData() == "terminal") then -- terminal left
-        map:playerAtTerminal(a, 0)
-    end
-    -- b
-    if (b:getUserData() == "terminal") then -- terminal left
-        map:playerAtTerminal(b, 0)
-    end
+	for i = 1, 2 do
+		-- ...
+		a, b = b, a		-- try the other direction
+	end
 end
 
 function preSolve(a, b, coll)
@@ -115,9 +108,20 @@ end
 function love.update(dt)
 
 	-- need to split entity physics update from entity logic update
-    map:update()
 
-	for i, door in ipairs(map.doors) do
+    if map.player.isDead == true then
+        if isDown("return", "kpenter") then
+            map:restart()
+        end
+    end
+
+	map.player:update()
+
+	for _, o in ipairs( map.objects ) do
+		o:update()
+	end
+
+	for _, door in ipairs(map.doors) do
 		door:update()
 	end
 
@@ -125,27 +129,24 @@ function love.update(dt)
 
 end
 
-t = 0
 
 function love.draw()
 	G.setCanvas(canvas)
 	G.clear(0, 0, 0)
 
 	-- render stuff
-	t = t + 1
-    
     map:setCamera(W, H)
 
     -- draw stuff
 	map:draw("floor")
 	shadow:draw()
 
-	map:drawDoors()
-	map:draw("walls")
-	map:drawItems()
-	map:drawTerminals()
+	drawList(map.doors)
+	drawList(map.terminals)
+	drawList(map.items)
+	drawList(map.objects)
 	map.player:draw()
-	map:objects_call( "draw" )
+	map:draw("walls")
 
     if map.player.isDead == true then
         map.player:drawDead()

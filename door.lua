@@ -1,4 +1,6 @@
-Door = Object:new()
+Door = Object:new {
+	type = "door"
+}
 function Door:init()
     self.x = 0
     self.y = 0
@@ -30,7 +32,7 @@ function Door:setActive(x,y,w,h, id, state,dx, dy)
     self.static = P.newBody(world, x,y, "static")
     self.shape = P.newRectangleShape(w, h)
     self.fixture = P.newFixture(self.static, self.shape)
-    self.fixture:setUserData( "door" )
+    self.fixture:setUserData(self)
 end
 
 function Door:draw()
