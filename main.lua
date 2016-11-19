@@ -261,6 +261,15 @@ function draw_debug_physics()
 		G.pop()
 	end
 
+	local contacts = world:getContactList()
+	G.setColor( 255, 0, 0 )
+	for j, contact in pairs(contacts) do
+		local x, y = contact:getPositions()
+		if x and y then
+			G.rectangle( 'fill', x-2, y-2, 4, 4 )
+		end
+	end
+
 	G.setColor( 255, 255, 255 ) -- reset color for others
 	G.pop()
 end
