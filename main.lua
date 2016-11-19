@@ -24,10 +24,16 @@ require("terminal")
 require("door")
 
 function love.load()
-    world = P.newWorld()
-    world:setCallbacks(beginContact, endContact, preSolve, postSolve)
-    map = Map()
-		map:load_json_map( "data/map.json" )
+	world = P.newWorld()
+	world:setCallbacks(beginContact, endContact, preSolve, postSolve)
+	map = Map()
+	map:load_json_map( "data/map.json" )
+
+	spritesheet = G.newImage("data/sprites.png")
+	local quads = makeQuads( spritesheet:getWidth(), spritesheet:getHeight(), 16)
+	spritequads = {
+		["dude"] = { quads[1], quads[2], quads[3] }
+	}
 end
 
 function beginContact(a, b, coll)

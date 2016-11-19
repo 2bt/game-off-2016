@@ -3,6 +3,8 @@ isDown = love.keyboard.isDown
 
 Player = Object:new()
 function Player:init()
+	self.timer = 0
+	self.anim_img = 1
 	self.ang = 0
 
 	local body    = P.newBody( world, 0, 0, "dynamic" )
@@ -51,9 +53,22 @@ function Player:update()
 	local mass        = self.body:getMass()
 	self.body:applyLinearImpulse( accel_x * mass, accel_y * mass )
 
-	if vx ~= 0 or vy ~= 0 then
+	if ( vx ~= 0 or vy ~= 0 ) and ( ix ~= 0 or iy ~= 0 ) then
 		self.ang = math.atan2(vx, -vy)
 	end
+
+
+
+	self.timer = self.timer + 0.016
+
+
+
+	if ix ~= 0 or iy ~= 0 then
+		self.anim_img = 2 + math.floor( ( self.timer / 0.2 ) % 2 )
+	else
+		self.anim_imt = 1
+	end
+
 
 	--if vx ~= 0 or vy ~= 0 or accel_x ~= 0 or accel_y ~= 0 then
 	--	print( vx, vy )
@@ -68,7 +83,7 @@ function Player:draw()
 	G.translate(x, y)
 	G.rotate(self.ang)
 	G.setColor( 255, 192, 192 )
-	G.rectangle( "fill", -5, -3, 10, 6 )
+	G.draw( spritesheet, spritequads.dude[ self.anim_img ], -8, -8 )
 	G.pop()
 
 	G.setColor( 255, 255, 255 ) -- reset for others
