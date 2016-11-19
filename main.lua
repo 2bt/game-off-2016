@@ -77,19 +77,19 @@ end
 
 function beginContact(a, b, coll)
     -- a
-    if (a:getUserData() == "item") then -- item picked up
+    if (a:getUserData() == "item") and (b:getUserData() == "player") then -- item picked up
         map:pickupItem(a)
-    elseif (a:getUserData() == "terminal") then -- terminal entered
+    elseif (a:getUserData() == "terminal") and (b:getUserData() == "player") then -- terminal entered
         map:playerAtTerminal(a, 1)
-    elseif (a:getUserData() == "enemy" and b:getUserData() == "player") then
+    elseif (a:getUserData() == "enemy" and b:getUserData() == "player" and map.player.isControlling == false) then
         map:playerDead()
     end
     -- b
-    if (b:getUserData() == "item") then -- item picked up
+    if (b:getUserData() == "item") and (a:getUserData() == "player") then -- item picked up
         map:pickupItem(b)
-    elseif (b:getUserData() == "terminal") then -- terminal entered
+    elseif (b:getUserData() == "terminal") and (a:getUserData() == "player") then -- terminal entered
         map:playerAtTerminal(b, 1)
-    elseif (b:getUserData() == "enemy" and a:getUserData() == "player") then
+    elseif (b:getUserData() == "enemy" and a:getUserData() == "player" and map.player.isControlling == false) then
         map:playerDead()
     end
 end
@@ -122,8 +122,6 @@ function love.update(dt)
 	end
 
 	world:update( 1 / 60 )
-    -- check terminals for hacking
-	map:checkTerminals()
 
 end
 

@@ -23,6 +23,7 @@ function StupidEnemy:init( obj )
 	body:setLinearDamping( 4, 4 )
 	self.body     = body
 	self.radius   = radius
+    self.id       = obj.properties.id
 
 	self.ai_target = nil
 	self.ai_state  = nil
@@ -49,12 +50,20 @@ function StupidEnemy:update()
             self:update_find_target()
         end
     else
-        local ix = (math.max(bool[isDown("right")], bool[isDown("d")])
-            - math.max(bool[isDown("left")], bool[isDown("a")]) )
-            * (1 + bool[isDown("lshift")]*0.5)
-        local iy = (math.max(bool[isDown("down")], bool[isDown("s")])
-            - math.max(bool[isDown("up")], bool[isDown("w")]) )
-            * (1 + bool[isDown("lshift")]*0.5)
+        -- this is the input table
+        -- let's not use isDown nowhere else
+        local input = {
+            ix   = bool[isDown("right", "d")] - bool[isDown("left", "a")],
+            iy   = bool[isDown("down", "s")] - bool[isDown("up", "w")],
+            hack = isDown("space", "e"),
+            run  = isDown("lshift", "rshift"),
+        }
+
+
+        local ix = 0
+        local iy = 0
+        ix = input.ix * (1 + bool[ input.run ] * 0.5)
+        iy = input.iy * (1 + bool[ input.run ] * 0.5)
 
         local v_max       = 85
         local accel_max   = 8.5
@@ -70,9 +79,16 @@ function StupidEnemy:update()
         local mass        = self.body:getMass()
         self.body:applyLinearImpulse( accel_x * mass, accel_y * mass )
 
-        if vx ~= 0 or vy ~= 0 then
+        if ( vx ~= 0 or vy ~= 0 ) and ( ix ~= 0 or iy ~= 0 ) then
             self.ang = math.atan2(vx, -vy)
         end
+
+        if isDown("escape") then
+            self.isBeingControlled = false
+            map.player.isControlling = false
+            map.player.fixture:setSensor(false)
+        end
+
 	end
 
 	self:updateAnim()
