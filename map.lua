@@ -123,6 +123,8 @@ function Map:update()
         end
     else
         self.player:update()
+        -- check terminals for hacking
+	    self:checkTerminals()
     end
 
     self:objects_call( "update" )
