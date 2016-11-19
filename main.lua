@@ -15,6 +15,8 @@ canvas = G.newCanvas(W, H)
 love.window.setMode(W * 2, H * 2, {resizable = true})
 love.mouse.setVisible(false)
 
+lastMap = "data/map.json"
+
 require("helper")
 require("enemies")
 require("map")
@@ -24,10 +26,14 @@ require("terminal")
 require("door")
 
 function love.load()
+    loadWorld()
+end
+
+function loadWorld()
     world = P.newWorld()
     world:setCallbacks(beginContact, endContact, preSolve, postSolve)
     map = Map()
-		map:load_json_map( "data/map.json" )
+    map:load_json_map( lastMap )
 end
 
 function beginContact(a, b, coll)
@@ -70,9 +76,7 @@ end
 function love.update(dt)
 
 	-- need to split entity physics update from entity logic update
-    map.player:update()
-
-    map:objects_call( "update" )
+    map:update()
 
 	for i, door in ipairs(map.doors) do
 		door:update()

@@ -30,14 +30,6 @@ end
 
 function Player:update()
 	-- need to split entity physics update from entity logic update
-    
-    if self.isDead == true then
-        if bool[isDown("return")] == 1 or bool[isDown("kpenter")] == 1 then
-            self:respawn()
-        end
-
-        return
-    end
 
 	local ix = (math.max(bool[isDown("right")], bool[isDown("d")])
 	    - math.max(bool[isDown("left")], bool[isDown("a")]) )
@@ -91,11 +83,4 @@ function Player:drawDead()
     G.print("YOU ARE DEAD !!!", map.player.body:getX() -125, map.player.body:getY())
     G.setNewFont()
     G.print("Press ENTER to respawn ...", map.player.body:getX() -60, map.player.body:getY()+40)
-end
-
-function Player:respawn()
-    self.body:setX(self.x)
-    self.body:setY(self.y)
-    self.fixture:setSensor(false)
-    self.isDead = false 
 end
