@@ -45,12 +45,23 @@ function Player:update()
         return
     end
 
-	local ix = (math.max(bool[isDown("right")], bool[isDown("d")])
-	    - math.max(bool[isDown("left")], bool[isDown("a")]) )
-	    * (1 + bool[isDown("lshift")]*0.5)
-	local iy = (math.max(bool[isDown("down")], bool[isDown("s")])
-	    - math.max(bool[isDown("up")], bool[isDown("w")]) )
-	    * (1 + bool[isDown("lshift")]*0.5)
+	-- this is the input table
+	-- let's not use isDown nowhere else
+	local input = {
+		ix   = bool[isDown("right", "d")] - bool[isDown("left", "a")],
+		iy   = bool[isDown("down", "s")] - bool[isDown("up", "w")],
+		hack = isDown("space", "e"),
+		run  = isDown("lshift", "rshift"),
+	}
+
+
+	local ix = 0
+	local iy = 0
+	-- can't move while hacking
+	if not input.hack then
+		ix = input.ix * (1 + bool[ input.run ] * 0.5)
+		iy = input.iy * (1 + bool[ input.run ] * 0.5)
+	end
 
 	local v_max       = 85
 	local accel_max   = 8.5
@@ -71,9 +82,7 @@ function Player:update()
 	end
 
 
-
 	self.timer = self.timer + 0.016
-
 
 
 	if ix ~= 0 or iy ~= 0 then
@@ -81,7 +90,7 @@ function Player:update()
 	else
 		self.anim_img = 1
 	end
-	if isDown("e") then
+	if input.hack then
 		self.anim_img = 5 + math.floor( ( self.timer / 0.1 ) % 2 )
 	end
 
@@ -93,7 +102,6 @@ function Player:update()
 end
 
 function Player:draw()
-    
 
 	G.push()
 	local x, y = self:pos()
