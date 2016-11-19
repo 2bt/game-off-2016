@@ -105,13 +105,13 @@ function love.draw()
     -- draw stuff
 	map:draw("floor")
 
+	map:drawDoors()
+
 	map:draw("walls")
 
 	map:drawItems()
 
 	map:drawTerminals()
-
-	map:drawDoors()
 
 	p:draw()
 
