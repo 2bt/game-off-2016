@@ -1,7 +1,7 @@
 Terminal = Object:new {
 	type = "terminal",
 	img  = G.newImage("data/terminal.png"),
-	anim = { 1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 9, 10, 9, 10, 9, 10, 9, 10 }
+	anim = { 1, 2, 1, 2, 1, 2, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 10, 11, 10, 11, 10, 11, 10, 11 }
 }
 Terminal.quads = makeQuads( Terminal.img:getWidth(), Terminal.img:getHeight(), 16)
 function Terminal:init()
