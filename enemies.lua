@@ -59,10 +59,11 @@ function StupidEnemy:update()
         -- this is the input table
         -- let's not use isDown nowhere else
         local input = {
-            ix   = bool[isDown("right", "d")] - bool[isDown("left", "a")],
-            iy   = bool[isDown("down", "s")] - bool[isDown("up", "w")],
-            hack = isDown("space", "e"),
-            run  = isDown("lshift", "rshift"),
+            ix     = bool[isDown("right", "d")] - bool[isDown("left", "a")],
+            iy     = bool[isDown("down", "s")] - bool[isDown("up", "w")],
+            hack   = isDown("space", "e"),
+            run    = isDown("lshift", "rshift"),
+			escape = isDown("escape")
         }
 
 
@@ -89,10 +90,10 @@ function StupidEnemy:update()
             self.ang = math.atan2(vx, -vy)
         end
 
-        if isDown("escape") then
+        if input.escape then
             self.isBeingControlled = false
-            map.player.isControlling = false
-            map.player.fixture:setSensor(false)
+            map.player.controllingUnit = nil
+            camera:setNextTarget(map.player)
         end
 
 	end

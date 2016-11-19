@@ -65,6 +65,36 @@ end
 
 
 
+Camera = Object:new()
+function Camera:init(trg)
+	self.target = trg
+end
+function Camera:setNextTarget(trg)
+	self.nextTarget = trg
+	self.tick = 0
+end
+function Camera:update()
+	local x, y = self.target:pos()
+
+	if self.nextTarget then
+		local i = self.tick / 30
+		local x2, y2 = self.nextTarget:pos()
+		x = x * (1 - i) + x2 * i
+		y = y * (1 - i) + y2 * i
+		self.tick = self.tick + 1
+		if self.tick >= 30 then
+			self.target = self.nextTarget
+			self.nextTarget = nil
+		end
+	end
+	self.x = x
+	self.y = y
+end
+
+
+
+
+
 function love.load()
 	loadWorld()
 end
@@ -74,6 +104,7 @@ function loadWorld()
 	world:setCallbacks(beginContact, endContact, preSolve, postSolve)
 	map = Map()
 	map:load_json_map( lastMap )
+	camera = Camera(map.player)
 end
 
 
@@ -125,7 +156,10 @@ function love.update(dt)
 		door:update()
 	end
 
+
 	world:update( 1 / 60 )
+
+	camera:update()
 
 end
 
@@ -135,7 +169,9 @@ function love.draw()
 	G.clear(0, 0, 0)
 
 	-- render stuff
-    map:setCamera(W, H)
+
+	G.translate( W / 2, H / 2 )
+	G.translate( math.floor(-camera.x + 0.5), math.floor(-camera.y + 0.5) )
 
     -- draw stuff
 	map:draw("floor")

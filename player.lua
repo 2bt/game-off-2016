@@ -121,6 +121,7 @@ function Player:update()
 						-- TODO: take over robot
 						self.controllingUnit = o
 						o.isBeingControlled = true
+						camera:setNextTarget(o)
 						break
 					end
 				end
@@ -162,7 +163,7 @@ function Player:update()
 	-- animation
 
 	if ix ~= 0 or iy ~= 0 then
-		self.frame = 1 + math.floor( ( self.timer / 0.15 ) % 4 )
+		self.frame = 1 + math.floor( ( self.timer / 0.1 ) % 4 )
 	else
 		self.frame = 1
 	end
@@ -176,6 +177,7 @@ function Player:update()
 	--	print()
 	--end
 end
+
 
 function Player:draw()
 
