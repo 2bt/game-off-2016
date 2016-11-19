@@ -144,12 +144,16 @@ function love.draw()
 	drawList(map.doors)
 	drawList(map.terminals)
 	drawList(map.items)
-	drawList(map.objects)
 	map.player:draw()
+	drawList(map.objects)
 	map:draw("walls")
 
     if map.player.isDead == true then
-        map.player:drawDead()
+		G.setNewFont(30)
+		G.setColor(255,10,50)
+		G.print("YOU ARE DEAD !!!", map.player.body:getX() -125, map.player.body:getY())
+		G.setNewFont()
+		G.print("Press ENTER to respawn ...", map.player.body:getX() -60, map.player.body:getY()+40)
     end
 
 	if isDown("f2") then

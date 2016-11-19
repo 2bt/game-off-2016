@@ -50,12 +50,11 @@ end
 
 function Player:update()
 	-- need to split entity physics update from entity logic update
-    if self.isControlling == true then
-        return
-    end
-
 	-- this is the input table
 	-- let's not use isDown nowhere else
+
+	if self.isDead then return end
+
 	local input = {
 		ix   = bool[isDown("right", "d")] - bool[isDown("left", "a")],
 		iy   = bool[isDown("down", "s")] - bool[isDown("up", "w")],
@@ -63,9 +62,22 @@ function Player:update()
 		run  = isDown("lshift", "rshift"),
 	}
 
+    if self.controllingUnit then
+		-- TODO
+--        self.controllingUnit:control(input)
+		input = {
+			ix = 0,
+			iy = 0,
+			run = false,
+			hack = false
+		}
+    end
+
 
 	local ix = 0
 	local iy = 0
+
+
 	if input.hack then
 
 		if not self.terminal and not self.old_hack then
@@ -95,11 +107,20 @@ function Player:update()
 			self.hacking_progress = self.hacking_progress + 1
 			if self.hacking_progress > 50 then
 				self.hacking_progress = 0
-				-- FIXME
+
+				-- FIXME: move this into the terminal
 				input.hack = false
 				for _, d in pairs(map.doors) do
 					if self.terminal.controlID == d.id then
 						d:changeState()
+						break
+					end
+				end
+				for _, o in pairs(map.objects) do
+					if self.terminal.controlID == o.id then
+						-- TODO: take over robot
+						self.controllingUnit = o
+						o.isBeingControlled = true
 						break
 					end
 				end
@@ -171,10 +192,3 @@ function Player:draw()
 	G.setColor( 255, 255, 255 ) -- reset for others
 end
 
-function Player:drawDead()
-    G.setNewFont(30)
-    G.setColor(255,10,50)
-    G.print("YOU ARE DEAD !!!", map.player.body:getX() -125, map.player.body:getY())
-    G.setNewFont()
-    G.print("Press ENTER to respawn ...", map.player.body:getX() -60, map.player.body:getY()+40)
-end

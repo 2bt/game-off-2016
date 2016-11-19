@@ -22,7 +22,6 @@ function Map:init()
 	self.terminals = {}
 	self.doors = {}
     self.objects = {}
-	self:objects_init()
 	self.px = 0
 	self.py = 0
 end
@@ -113,8 +112,15 @@ function Map:load_json_map( path )
 			end
 
 		elseif layer.type == "objectgroup" then
-			for _, obj_desc in ipairs( layer.objects ) do
-				self:objects_load( obj_desc )
+			for _, o in ipairs( layer.objects ) do
+
+				-- find constructor of enemy
+				local constructor = _G[ o.type ]
+				if not constructor then
+					print("WOOOT! There's no " .. o.type)
+				else
+					constructor( o )
+				end
 			end
 		end
 
@@ -132,35 +138,6 @@ function Map:restart()
 	self.doors = {}
     self.objects = {}
     loadWorld()
-end
-
-function Map:objects_init()
-	self.obj_by_name = {}
-	self.object_types = {}
-
-	self.object_types[ "dummy" ] = Dummy
-	self:objects_register( "stupid_enemy", StupidEnemy )
-end
-
-function Map:objects_load( obj_desc )
-	local obj_type = self.object_types[ obj_desc.type ]
-	if not obj_type then
-		print( "objects_load: unkown object type", obj_desc.type )
-		return
-	end
-	local obj = obj_type( obj_desc )
-	if not obj then return end
-	table.insert( self.objects, obj )
-	if obj.name then
-		self.obj_by_name[ obj.name ] = obj
-	end
-end
-
-function Map:objects_register( type_name, constructor )
-	if not constructor then
-		print( "objects_register: invalid registration of", type_name, "as", constructor )
-	end
-	self.object_types[ type_name ] = constructor
 end
 
 

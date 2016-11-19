@@ -13,8 +13,9 @@ local my_anims = {
 
 
 function StupidEnemy:init( obj )
+	table.insert( map.objects, self )
+
 	self.name = obj.name
-	self.type = obj.type
 
 	local body    = P.newBody( world, obj.x, obj.y, "dynamic" )
 	local radius  = math.max( 8, math.max( obj.width, obj.height ) )
@@ -42,7 +43,9 @@ function StupidEnemy:init( obj )
 end
 
 function StupidEnemy:update()
-	if self.isBeingControlled == false then
+
+	if not self.isBeingControlled then
+
         if not self.ai_target then
             self:change_ai_state( "find_target" )
             self:update_find_target()
@@ -51,6 +54,7 @@ function StupidEnemy:update()
             self:update_play_target()
             self:update_find_target()
         end
+
     else
         -- this is the input table
         -- let's not use isDown nowhere else
@@ -171,11 +175,11 @@ function StupidEnemy:update_find_target()
 				table.insert( self.ai_debug, { "dot", x, y } )
 			end
 
-			local user_data = fixture:getUserData()
-			if user_data.type == "wall" or user_data.type == "door" then
+			local obj = fixture:getUserData()
+			if obj.type == "wall" or obj.type == "door" then
 				self.ai_target = nil
 				return 0
-			elseif user_data == "player" then
+			elseif obj.type == "player" then
 				self.ai_target = player
 				return 1
 			end
