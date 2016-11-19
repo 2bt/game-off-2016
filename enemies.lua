@@ -15,6 +15,7 @@ function StupidEnemy:init( obj )
 	body:setLinearDamping( 4, 4 )
 	self.body     = body
 	self.radius   = radius
+    self.id       = obj.properties.id
 
 	self.ai_target = nil
 	self.ai_state  = nil
