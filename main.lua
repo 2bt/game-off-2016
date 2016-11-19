@@ -32,26 +32,26 @@ end
 
 function beginContact(a, b, coll)
     -- a
-    if (a:getCategory() == 2) then -- item picked up
+    if (a:getUserData() == "item") then -- item picked up
         map:pickupItem(a)
-    elseif (a:getCategory() == 3) then -- terminal entered
+    elseif (a:getUserData() == "terminal") then -- terminal entered
         map:playerAtTerminal(a, 1)
     end
     -- b
-    if (b:getCategory() == 2) then -- item picked up
+    if (b:getUserData() == "item") then -- item picked up
         map:pickupItem(b)
-    elseif (b:getCategory() == 3) then -- terminal entered
+    elseif (b:getUserData() == "terminal") then -- terminal entered
         map:playerAtTerminal(b, 1)
     end
 end
  
 function endContact(a, b, coll)
     -- a
-    if (a:getCategory() == 3) then -- terminal left
+    if (a:getUserData() == "terminal") then -- terminal left
         map:playerAtTerminal(a, 0)
     end
     -- b
-    if (b:getCategory() == 3) then -- terminal left
+    if (b:getUserData() == "terminal") then -- terminal left
         map:playerAtTerminal(b, 0)
     end
 end
