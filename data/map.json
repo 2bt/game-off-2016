@@ -116,6 +116,21 @@
                  "width":16,
                  "x":1312,
                  "y":480
+                }, 
+                {
+                 "height":15.6666666666667,
+                 "id":124,
+                 "name":"terminal",
+                 "properties":
+                    {
+                     "controlID":"2"
+                    },
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":15.8181818181818,
+                 "x":1120,
+                 "y":496
                 }],
          "opacity":0.899999976158142,
          "type":"objectgroup",
@@ -910,7 +925,7 @@
          "x":0,
          "y":0
         }],
- "nextobjectid":124,
+ "nextobjectid":125,
  "orientation":"orthogonal",
  "properties":
     {
