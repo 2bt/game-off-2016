@@ -16,7 +16,7 @@ function Terminal:setActive(x,y,w,h,controlID)
     local static = P.newBody(world, x,y, "static")
     local shape = P.newRectangleShape(w, h)
     self.fixture = P.newFixture(static, shape)
-    self.fixture:setCategory(3)
+    self.fixture:setUserData("terminal")
     self.static = static
 end
 

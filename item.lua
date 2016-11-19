@@ -15,7 +15,7 @@ function Item:setActive( x, y, w ,h )
     local shape = P.newCircleShape(0, 0, 4)
     self.fixture = P.newFixture(static, shape)
     self.fixture:setSensor( true )
-    self.fixture:setCategory(2)
+    self.fixture:setUserData("item")
     self.static = static
 end
 
