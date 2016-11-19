@@ -31,7 +31,7 @@ function Door:setActive(x,y,w,h, id, state,dx, dy)
 	self.state = state
 	self.dx = dx
 	self.dy = dy
-	self.static = P.newBody(world, x,y, "static")
+	self.static = P.newBody(world, x,y, "kinematic")
 	self.shape = P.newRectangleShape(w, h)
 	self.fixture = P.newFixture(self.static, self.shape)
 	self.fixture:setUserData(self)
