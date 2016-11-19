@@ -167,7 +167,21 @@ function Map:load_json_map( path )
 
 end
 
+function Map:update()
+    if self.player.isDead == true then
+        if bool[isDown("return")] == 1 or bool[isDown("kpenter")] == 1 then
+            self:restart()
+        end
+    else
+        self.player:update()
+    end
 
+    self:objects_call( "update" )
+end
+
+function Map:restart()
+    loadWorld()
+end
 
 function Map:objects_init()
 	self.objects = {}
@@ -300,6 +314,12 @@ function Map:pickupItem(item)
 			table.remove(self.items, _)
 		end
 	end
+end
+
+function Map:playerDead()
+    self.player.fixture:setSensor(true)
+    self.player.body:setLinearVelocity(0,0)
+    self.player.isDead = true
 end
 
 function Map:playerAtTerminal(terminal, atTerminal)

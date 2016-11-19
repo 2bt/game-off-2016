@@ -10,6 +10,7 @@ function StupidEnemy:init( obj )
 	local radius  = math.max( 8, math.max( obj.width, obj.height ) )
 	local shape   = P.newCircleShape( radius )
 	local fixture = P.newFixture( body, shape )
+	fixture:setUserData("enemy")
 	body:setMass( 1 )
 	body:setLinearDamping( 4, 4 )
 	self.body     = body

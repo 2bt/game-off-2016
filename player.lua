@@ -13,7 +13,8 @@ function Player:init()
 	--body:setMass( 1 ) -- not necessary right now
 	fixture:setUserData( "player" )
 	self.body     = body
-
+	self.fixture  = fixture
+    self.isDead   = false
 end
 
 function Player:setPos( x, y )
@@ -63,6 +64,8 @@ function Player:update()
 end
 
 function Player:draw()
+    
+
 	G.push()
 	local x, y = self:pos()
 	G.translate(x, y)
@@ -72,4 +75,12 @@ function Player:draw()
 	G.pop()
 
 	G.setColor( 255, 255, 255 ) -- reset for others
+end
+
+function Player:drawDead()
+    G.setNewFont(30)
+    G.setColor(255,10,50)
+    G.print("YOU ARE DEAD !!!", map.player.body:getX() -125, map.player.body:getY())
+    G.setNewFont()
+    G.print("Press ENTER to respawn ...", map.player.body:getX() -60, map.player.body:getY()+40)
 end
