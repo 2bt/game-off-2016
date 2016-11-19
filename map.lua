@@ -276,11 +276,18 @@ function Map:checkTerminals()
 		if t.playerAtTerminal == 1 and bool[isDown("e")] == 1 and t.isUsed == 0 then
 			for _, d in pairs(self.doors) do
 				if t.controlID == d.id then
-					d:changeState()
 					t.isUsed = 1
+					d:changeState()
+					return
 				end
+			end
+			for _, e in pairs(self.objects) do
+                if t.controlID == e.id then
+                    t.isUsed = 1
+                    self.player.isControlling = true
+                    e.isBeingControlled = true
+                end
 			end
 		end
 	end
 end
-
