@@ -228,9 +228,11 @@ function draw_debug_physics()
 		local bangle = body:getAngle()
 		local fixtures = body:getFixtureList()
 
+		G.push()
+		G.translate( bx, by )
 		G.setColor( 255, 192, 192 )
-		G.circle( 'fill', bx, by, 3, 6 )
-		G.line( bx, by, bx + 8 * math.cos(bangle), by + 8 * math.sin(bangle) )
+		G.circle( 'fill', 0, 0, 3, 6 )
+		G.line( 0, 0, 8 * math.cos(bangle), 8 * math.sin(bangle) )
 		G.setColor( 255, 64, 64 )
 
 		for j, fixture in pairs(fixtures) do
@@ -240,7 +242,7 @@ function draw_debug_physics()
 			if shape_type == 'circle' then
 				local sx, sy = shape:getPoint()
 				local r = shape:getRadius()
-				G.circle( 'line', bx + sx, by + sy, r, 10 )
+				G.circle( 'line', sx, sy, r, 10 )
 
 			elseif shape_type == 'chain' then
 				G.line( shape:getPoints() )
@@ -252,6 +254,8 @@ function draw_debug_physics()
 				-- todo
 			end
 		end
+
+		G.pop()
 	end
 
 	G.setColor( 255, 255, 255 ) -- reset color for others
