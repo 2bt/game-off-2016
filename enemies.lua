@@ -1,5 +1,13 @@
 
 
+local my_img = G.newImage("data/round-robot.png")
+local my_anims = {
+	img   = my_img,
+	quads = makeQuads( my_img:getWidth(), my_img:getHeight(), 16),
+	idle  = { duration = 1, quads = { 1 } },
+	blink = { duration = 0.3, quads = { 2, 3, 4, 5 } },
+}
+
 
 StupidEnemy = Object:new()
 function StupidEnemy:init( obj )
@@ -20,6 +28,12 @@ function StupidEnemy:init( obj )
 	self.ai_state  = nil
 	self.ai_debug  = {}
     self.isBeingControlled = false
+
+	self.anims      = my_anims
+	self.anim_timer = 0
+	self.anim_name  = "idle"
+	self.anim       = self.anims[ self.anim_name ]
+	self.anim_quad  = self.anim.quads[1]
 
 	print( "StupidEnemy:init "..tostring(self.name) )
 end
@@ -60,12 +74,41 @@ function StupidEnemy:update()
             self.ang = math.atan2(vx, -vy)
         end
 	end
+
+	self:updateAnim()
+end
+
+function StupidEnemy:updateAnim()
+	local duration = self.anim.duration
+	self.anim_timer = self.anim_timer + 0.01
+	if duration ~= 0 and self.anim_timer >= duration then
+		self.anim_timer = 0
+		if self.anim_name == "idle" then
+			if math.random() < 1.5 then
+				self:setAnim( "blink" )
+			end
+		elseif self.anim_name == "blink" then
+			self:setAnim( "idle" )
+		else
+			self:setAnim( "idle" )
+		end
+	end
+	if self.anim.duration == 0 then
+		self.anim_quad = self.anim.quads[1]
+	else
+		self.anim_quad = self.anim.quads[1 + math.floor( self.anim_timer / self.anim.duration * #self.anim.quads )]
+	end
+end
+
+function StupidEnemy:setAnim( name )
+	self.anim_name = name
+	self.anim = self.anims[ self.anim_name ]
 end
 
 function StupidEnemy:draw()
 	local x, y = self.body:getPosition()
-	G.setColor( 96, 96, 96 )
-	G.circle( "fill", x, y, self.radius )
+	G.setColor( 255, 255, 255 )
+	G.draw( self.anims.img, self.anims.quads[ self.anim_quad ], x - self.radius, y - self.radius )
 	
 	if isDown( "f3" ) then
 	  self:draw_debug_ai()
