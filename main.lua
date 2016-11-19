@@ -138,7 +138,9 @@ function love.draw()
 		G.scale(h / H, h / H)
 	end
 	G.setCanvas()
-	G.setColor(255, 255, 255)
+	if map.player.isDead == false then
+	    G.setColor(255, 255, 255)
+	end
 	G.draw(canvas)
 end
 
