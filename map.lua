@@ -15,7 +15,7 @@ function Map:init()
 	self.items = {}
 	self.terminals = {}
 	self.doors = {}
-
+    self.objects = {}
 	self:objects_init()
 end
 
@@ -127,11 +127,17 @@ function Map:update()
 end
 
 function Map:restart()
+	self.player = {} 
+	self.layers = {}
+	self.body_static ={}	
+	self.items = {}
+	self.terminals = {}
+	self.doors = {}
+    self.objects = {}
     loadWorld()
 end
 
 function Map:objects_init()
-	self.objects = {}
 	self.obj_by_name = {}
 	self.object_types = {}
 
