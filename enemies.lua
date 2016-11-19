@@ -68,6 +68,12 @@ function StupidEnemy:update()
         if ( vx ~= 0 or vy ~= 0 ) and ( ix ~= 0 or iy ~= 0 ) then
             self.ang = math.atan2(vx, -vy)
         end
+
+        if isDown("escape") then
+            self.isBeingControlled = false
+            map.player.isControlling = false
+        end
+
 	end
 end
 
