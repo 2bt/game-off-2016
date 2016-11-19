@@ -827,7 +827,7 @@
                  "name":"door",
                  "properties":
                     {
-                     "dx":"60",
+                     "dx":"-30",
                      "dy":"0",
                      "id":"2",
                      "state":"closed"
@@ -835,7 +835,7 @@
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":47.75,
+                 "width":23.875,
                  "x":1200.125,
                  "y":528.625
                 }, 
@@ -856,6 +856,24 @@
                  "width":15,
                  "x":1136.91666666667,
                  "y":608
+                }, 
+                {
+                 "height":15.75,
+                 "id":123,
+                 "name":"door",
+                 "properties":
+                    {
+                     "dx":"30",
+                     "dy":"0",
+                     "id":"2",
+                     "state":"closed"
+                    },
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":23.875,
+                 "x":1224,
+                 "y":528.625
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -892,7 +910,7 @@
          "x":0,
          "y":0
         }],
- "nextobjectid":123,
+ "nextobjectid":124,
  "orientation":"orthogonal",
  "properties":
     {
