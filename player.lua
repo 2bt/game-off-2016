@@ -1,6 +1,13 @@
 
 isDown = love.keyboard.isDown
 
+local dude_img = G.newImage("data/dude.png")
+local q   = makeQuads( dude_img:getWidth(), dude_img:getHeight(), 16)
+local dude_quads = {
+	q[1], q[2], q[1], q[3], -- idle, walk...
+	q[4], q[5] -- hack
+}
+
 Player = Object:new()
 function Player:init()
 	self.timer = 0
@@ -64,11 +71,13 @@ function Player:update()
 
 
 	if ix ~= 0 or iy ~= 0 then
-		self.anim_img = 2 + math.floor( ( self.timer / 0.2 ) % 2 )
+		self.anim_img = 1 + math.floor( ( self.timer / 0.15 ) % 4 )
 	else
-		self.anim_imt = 1
+		self.anim_img = 1
 	end
-
+	if isDown("e") then
+		self.anim_img = 5 + math.floor( ( self.timer / 0.1 ) % 2 )
+	end
 
 	--if vx ~= 0 or vy ~= 0 or accel_x ~= 0 or accel_y ~= 0 then
 	--	print( vx, vy )
@@ -82,8 +91,10 @@ function Player:draw()
 	local x, y = self:pos()
 	G.translate(x, y)
 	G.rotate(self.ang)
-	G.setColor( 255, 192, 192 )
-	G.draw( spritesheet, spritequads.dude[ self.anim_img ], -8, -8 )
+	G.setColor( 255, 255, 255 )
+	G.draw( dude_img, dude_quads[ self.anim_img ], -8, -8 )
+	--G.setColor( 255, 192, 192 )
+	--G.rectangle( "fill", -5, -3, 10, 6 )
 	G.pop()
 
 	G.setColor( 255, 255, 255 ) -- reset for others
