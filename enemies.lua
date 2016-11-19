@@ -181,8 +181,12 @@ function StupidEnemy:update_find_target()
 				self.ai_target = nil
 				return 0
 			elseif obj.type == "player" then
-				self.ai_target = player
-				return 1
+				if math.abs(x1-x) < 120 and math.abs(y1-y) < 120 then
+    				self.ai_target = player
+			    	return 1
+			    else
+			        self.ai_target = nil
+			    end
 			end
 			return 1
 		end

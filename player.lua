@@ -86,15 +86,13 @@ function Player:update()
 				for _, f in ipairs({ contact:getFixtures() }) do
 					local obj = f:getUserData()
 					if obj.type == "terminal" then
-						self.terminal = obj
-
 						local cx, cy = contact:getPositions() -- ignore the 2nd point
 						if cx then
 							local px, py = self:pos()
 							self.ang = math.atan2(cx - px, py - cy)
+							self.terminal = obj
+							break
 						end
-
-						break
 					end
 					if self.terminal then break end
 				end

@@ -85,12 +85,15 @@ function Camera:update()
 	local x, y = self.target:pos()
 
 	if self.nextTarget then
-		local i = self.tick / 30
+		local i = self.tick / 40
+
+		i =  i * i * (3 - 2 * i) -- smooth lerp
+
 		local x2, y2 = self.nextTarget:pos()
 		x = x * (1 - i) + x2 * i
 		y = y * (1 - i) + y2 * i
 		self.tick = self.tick + 1
-		if self.tick >= 30 then
+		if self.tick >= 40 then
 			self.target = self.nextTarget
 			self.nextTarget = nil
 		end
