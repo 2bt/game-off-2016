@@ -185,7 +185,6 @@ function Map:draw( layername )
 	local min_y = math.floor(py / TILE_SIZE) - 8
 	local max_y = math.floor(py / TILE_SIZE) + 7
 
-
 	G.setColor(255, 255, 255)
 
 	local layer = self.layers[ layername ]
