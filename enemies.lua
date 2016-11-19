@@ -83,7 +83,7 @@ function StupidEnemy:update_find_target()
 			end
 		
 			local user_data = fixture:getUserData()
-			if user_data == "wall" then
+			if user_data == "wall" or user_data == "door" then
 				self.ai_target = nil
 				return 0
 			elseif user_data == "player" then

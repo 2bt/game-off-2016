@@ -30,6 +30,7 @@ function Door:setActive(x,y,w,h, id, state,dx, dy)
     self.static = P.newBody(world, x,y, "static")
     self.shape = P.newRectangleShape(w, h)
     self.fixture = P.newFixture(self.static, self.shape)
+    self.fixture:setUserData( "door" )
 end
 
 function Door:draw()
