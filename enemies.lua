@@ -3,6 +3,15 @@ StupidEnemy = Object:new {
 	type = "enemy"
 }
 
+local my_img = G.newImage("data/round-robot.png")
+local my_anims = {
+	img   = my_img,
+	quads = makeQuads( my_img:getWidth(), my_img:getHeight(), 16),
+	idle  = { duration = 1, quads = { 1 } },
+	blink = { duration = 0.3, quads = { 2, 3, 4, 5 } },
+}
+
+
 function StupidEnemy:init( obj )
 	self.name = obj.name
 	self.type = obj.type
@@ -23,6 +32,12 @@ function StupidEnemy:init( obj )
 	self.ai_debug  = {}
     self.isBeingControlled = false
 
+	self.anims      = my_anims
+	self.anim_timer = 0
+	self.anim_name  = "idle"
+	self.anim       = self.anims[ self.anim_name ]
+	self.anim_quad  = self.anim.quads[1]
+
 	print( "StupidEnemy:init "..tostring(self.name) )
 end
 
@@ -37,12 +52,20 @@ function StupidEnemy:update()
             self:update_find_target()
         end
     else
-        local ix = (math.max(bool[isDown("right")], bool[isDown("d")])
-            - math.max(bool[isDown("left")], bool[isDown("a")]) )
-            * (1 + bool[isDown("lshift")]*0.5)
-        local iy = (math.max(bool[isDown("down")], bool[isDown("s")])
-            - math.max(bool[isDown("up")], bool[isDown("w")]) )
-            * (1 + bool[isDown("lshift")]*0.5)
+        -- this is the input table
+        -- let's not use isDown nowhere else
+        local input = {
+            ix   = bool[isDown("right", "d")] - bool[isDown("left", "a")],
+            iy   = bool[isDown("down", "s")] - bool[isDown("up", "w")],
+            hack = isDown("space", "e"),
+            run  = isDown("lshift", "rshift"),
+        }
+
+
+        local ix = 0
+        local iy = 0
+        ix = input.ix * (1 + bool[ input.run ] * 0.5)
+        iy = input.iy * (1 + bool[ input.run ] * 0.5)
 
         local v_max       = 85
         local accel_max   = 8.5
@@ -58,17 +81,52 @@ function StupidEnemy:update()
         local mass        = self.body:getMass()
         self.body:applyLinearImpulse( accel_x * mass, accel_y * mass )
 
-        if vx ~= 0 or vy ~= 0 then
+        if ( vx ~= 0 or vy ~= 0 ) and ( ix ~= 0 or iy ~= 0 ) then
             self.ang = math.atan2(vx, -vy)
         end
+
+        if isDown("escape") then
+            self.isBeingControlled = false
+            map.player.isControlling = false
+            map.player.fixture:setSensor(false)
+        end
+
 	end
+
+	self:updateAnim()
+end
+
+function StupidEnemy:updateAnim()
+	local duration = self.anim.duration
+	self.anim_timer = self.anim_timer + 0.01
+	if duration ~= 0 and self.anim_timer >= duration then
+		self.anim_timer = 0
+		if self.anim_name == "idle" then
+			if math.random() < 1.5 then
+				self:setAnim( "blink" )
+			end
+		elseif self.anim_name == "blink" then
+			self:setAnim( "idle" )
+		else
+			self:setAnim( "idle" )
+		end
+	end
+	if self.anim.duration == 0 then
+		self.anim_quad = self.anim.quads[1]
+	else
+		self.anim_quad = self.anim.quads[1 + math.floor( self.anim_timer / self.anim.duration * #self.anim.quads )]
+	end
+end
+
+function StupidEnemy:setAnim( name )
+	self.anim_name = name
+	self.anim = self.anims[ self.anim_name ]
 end
 
 function StupidEnemy:draw()
 	local x, y = self.body:getPosition()
-	G.setColor( 96, 96, 96 )
-	G.circle( "fill", x, y, self.radius )
-
+	G.setColor( 255, 255, 255 )
+	G.draw( self.anims.img, self.anims.quads[ self.anim_quad ], x - self.radius, y - self.radius )
 	if isDown( "f3" ) then
 	  self:draw_debug_ai()
   end
