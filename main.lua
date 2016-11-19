@@ -36,12 +36,16 @@ function beginContact(a, b, coll)
         map:pickupItem(a)
     elseif (a:getUserData() == "terminal") then -- terminal entered
         map:playerAtTerminal(a, 1)
+    elseif (a:getUserData() == "enemy" and b:getUserData() == "player") then
+        map:playerDead()
     end
     -- b
     if (b:getUserData() == "item") then -- item picked up
         map:pickupItem(b)
     elseif (b:getUserData() == "terminal") then -- terminal entered
         map:playerAtTerminal(b, 1)
+    elseif (b:getUserData() == "enemy" and a:getUserData() == "player") then
+        map:playerDead()
     end
 end
  
@@ -66,8 +70,9 @@ end
 function love.update(dt)
 
 	-- need to split entity physics update from entity logic update
-	map.player:update()
-	map:objects_call( "update" )
+    map.player:update()
+
+    map:objects_call( "update" )
 
 	for i, door in ipairs(map.doors) do
 		door:update()
@@ -109,6 +114,10 @@ function love.draw()
 	G.setColor( 255, 255, 255 )
 	map:objects_call( "draw" )
 	G.setColor( 255, 255, 255 )
+
+    if map.player.isDead == true then
+        p:drawDead()
+    end
 
 	if isDown("f2") then
 		draw_debug_physics()

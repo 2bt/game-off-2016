@@ -266,6 +266,12 @@ function Map:pickupItem(item)
 	end
 end
 
+function Map:playerDead()
+    self.player.fixture:setSensor(true)
+    self.player.body:setLinearVelocity(0,0)
+    self.player.isDead = true
+end
+
 function Map:playerAtTerminal(terminal, atTerminal)
 	for _, t in pairs(self.terminals) do
 		if t.fixture == terminal then
