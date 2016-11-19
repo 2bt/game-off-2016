@@ -151,7 +151,7 @@ function love.draw()
 	map.player:draw()
 	map:objects_call( "draw" )
 
-
+	map.player:draw()
 
     if map.player.isDead == true then
         map.player:drawDead()
@@ -174,7 +174,9 @@ function love.draw()
 		G.scale(h / H, h / H)
 	end
 	G.setCanvas()
-	G.setColor(255, 255, 255)
+	if map.player.isDead == false then
+	    G.setColor(255, 255, 255)
+	end
 	G.draw(canvas)
 end
 
