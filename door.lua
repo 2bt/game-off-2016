@@ -64,8 +64,30 @@ function Door:update()
 		self.y = y
 	end
 
+	self:checkCrush()
+
 	if isDown("f4") then
 		self:changeState()
+	end
+end
+
+function Door:checkCrush()
+	local contacts = self.static:getContactList()
+	for _, contact in pairs( contacts ) do
+		local cx, cy = contact:getPositions()
+		if cx and cy then
+			for _, fixture in ipairs({ contact:getFixtures() }) do
+				local obj = fixture:getUserData()
+				if obj ~= self and obj.type == "player" then
+					for _, f in ipairs{ contact:getFixtures() } do
+						-- f is door fixture and f intersect cx, cy
+						if f ~= fixture and f:testPoint( cx, cy ) then
+							obj:kill()
+						end
+					end
+				end
+			end
+		end
 	end
 end
 
