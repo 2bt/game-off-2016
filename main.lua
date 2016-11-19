@@ -123,7 +123,6 @@ function love.draw()
 
 	if isDown("f2") then
 		draw_debug_physics()
-		G.setColor( 255, 255, 255 )
 	end
 
 
@@ -139,6 +138,7 @@ function love.draw()
 		G.scale(h / H, h / H)
 	end
 	G.setCanvas()
+	G.setColor(255, 255, 255)
 	G.draw(canvas)
 end
 
