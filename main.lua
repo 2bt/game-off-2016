@@ -25,6 +25,45 @@ require("item")
 require("terminal")
 require("door")
 
+
+shadow = {
+	canvas = G.newCanvas(W, H),
+	shader = G.newShader([[
+	vec4 effect( vec4 color, sampler2D tex, vec2 tex_coords, vec2 screen_coords ) {
+		return vec4(1.0, 1.0, 1.0, texture2D(tex, tex_coords).a);
+	}
+	]])
+}
+function shadow:draw()
+	local c = G.getCanvas()
+	G.setCanvas( self.canvas )
+	G.clear()
+	G.setShader( self.shader )
+	G.push()
+	G.translate(3, 3)
+
+	-- draw everything that casts a shadow
+	map:draw("walls")
+	map:drawDoors()
+	map:drawItems()
+	map:drawTerminals()
+	map.player:draw()
+	map:objects_call( "draw" )
+
+	G.pop()
+	G.setShader()
+	G.setCanvas(c)
+
+	G.push()
+	G.origin()
+	G.setColor(0, 0, 0, 100)
+	G.draw(self.canvas)
+	G.pop()
+end
+
+
+
+
 function love.load()
     loadWorld()
 end
@@ -101,18 +140,16 @@ function love.draw()
 
     -- draw stuff
 	map:draw("floor")
+	shadow:draw()
 
 	map:drawDoors()
-
 	map:draw("walls")
-
 	map:drawItems()
-
 	map:drawTerminals()
+	map.player:draw()
+	map:objects_call( "draw" )
 
 	map.player:draw()
-
-	map:objects_call( "draw" )
 
     if map.player.isDead == true then
         map.player:drawDead()
