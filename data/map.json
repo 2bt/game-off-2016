@@ -810,7 +810,7 @@
                  "properties":
                     {
                      "dx":"0",
-                     "dy":"-20",
+                     "dy":"-13",
                      "id":"1",
                      "state":"closed"
                     },
@@ -827,7 +827,7 @@
                  "name":"door",
                  "properties":
                     {
-                     "dx":"-30",
+                     "dx":"-21",
                      "dy":"0",
                      "id":"2",
                      "state":"closed"
@@ -846,7 +846,7 @@
                  "properties":
                     {
                      "dx":"0",
-                     "dy":"20",
+                     "dy":"13",
                      "id":"1",
                      "state":"closed"
                     },
@@ -863,7 +863,7 @@
                  "name":"door",
                  "properties":
                     {
-                     "dx":"30",
+                     "dx":"21",
                      "dy":"0",
                      "id":"2",
                      "state":"closed"
@@ -877,7 +877,7 @@
                 }],
          "opacity":1,
          "type":"objectgroup",
-         "visible":false,
+         "visible":true,
          "width":200,
          "x":0,
          "y":0
