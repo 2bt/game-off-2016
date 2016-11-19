@@ -96,11 +96,8 @@ function love.draw()
 
 	-- render stuff
 	t = t + 1
-	local p = map.player
-	local px, py = p:pos()
-
-	G.translate( W / 2, H / 2 )
-	G.translate( math.floor(-px + 0.5), math.floor(-py + 0.5) )
+    
+    map:setCamera(W, H)
 
     -- draw stuff
 	map:draw("floor")
@@ -113,12 +110,12 @@ function love.draw()
 
 	map:drawTerminals()
 
-	p:draw()
+	map.player:draw()
 
 	map:objects_call( "draw" )
 
     if map.player.isDead == true then
-        p:drawDead()
+        map.player:drawDead()
     end
 
 	if isDown("f2") then

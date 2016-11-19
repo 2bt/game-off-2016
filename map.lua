@@ -17,6 +17,8 @@ function Map:init()
 	self.doors = {}
     self.objects = {}
 	self:objects_init()
+	self.px = 0
+	self.py = 0
 end
 
 
@@ -179,17 +181,28 @@ function Dummy:init( obj )
 	print( "Dummy:init" )
 end
 
+function Map:setCamera(W, H)
+    self.px, self.py = self.player:pos()
+	if self.player.isControlling == true then 
+        for _, enemy in pairs(self.objects) do
+            if enemy.isBeingControlled == true then
+                self.px, self.py = enemy:pos()
+            end
+        end
+    end
 
+	G.translate( W / 2, H / 2 )
+	G.translate( math.floor(-self.px + 0.5), math.floor(-self.py + 0.5) )
+end
 
 function Map:draw( layername )
 
 
 	-- draw only tiles in view (and view is something too simple)
-	local px, py = self.player:pos()
-	local min_x = math.floor(px / TILE_SIZE) - 11
-	local max_x = math.floor(px / TILE_SIZE) + 10
-	local min_y = math.floor(py / TILE_SIZE) - 8
-	local max_y = math.floor(py / TILE_SIZE) + 7
+	local min_x = math.floor(self.px / TILE_SIZE) - 11
+	local max_x = math.floor(self.px / TILE_SIZE) + 10
+	local min_y = math.floor(self.py / TILE_SIZE) - 8
+	local max_y = math.floor(self.py / TILE_SIZE) + 7
 
 
 	G.setColor(255, 255, 255)

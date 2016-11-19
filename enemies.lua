@@ -19,18 +19,46 @@ function StupidEnemy:init( obj )
 	self.ai_target = nil
 	self.ai_state  = nil
 	self.ai_debug  = {}
+    self.isBeingControlled = false
 
 	print( "StupidEnemy:init "..tostring(self.name) )
 end
 
 function StupidEnemy:update()
-	if not self.ai_target then
-		self:change_ai_state( "find_target" )
-		self:update_find_target()
-	else
-		self:change_ai_state( "play_target" )
-		self:update_play_target()
-		self:update_find_target()
+	if self.isBeingControlled == false then
+        if not self.ai_target then
+            self:change_ai_state( "find_target" )
+            self:update_find_target()
+        else
+            self:change_ai_state( "play_target" )
+            self:update_play_target()
+            self:update_find_target()
+        end
+    else
+        local ix = (math.max(bool[isDown("right")], bool[isDown("d")])
+            - math.max(bool[isDown("left")], bool[isDown("a")]) )
+            * (1 + bool[isDown("lshift")]*0.5)
+        local iy = (math.max(bool[isDown("down")], bool[isDown("s")])
+            - math.max(bool[isDown("up")], bool[isDown("w")]) )
+            * (1 + bool[isDown("lshift")]*0.5)
+
+        local v_max       = 85
+        local accel_max   = 8.5
+        local diagonal    = 1 / math.sqrt(2)
+        -- local diagonal    = 1 -- for double speed on diagonal movement
+        if ix ~= 0 and iy ~= 0 then
+            v_max           = diagonal * v_max
+            accel_max       = diagonal * accel_max
+        end
+        local vx, vy      = self.body:getLinearVelocity()
+        local accel_x     = clamp( ix * v_max - vx , -accel_max, accel_max )
+        local accel_y     = clamp( iy * v_max - vy , -accel_max, accel_max )
+        local mass        = self.body:getMass()
+        self.body:applyLinearImpulse( accel_x * mass, accel_y * mass )
+
+        if vx ~= 0 or vy ~= 0 then
+            self.ang = math.atan2(vx, -vy)
+        end
 	end
 end
 
@@ -106,6 +134,9 @@ function StupidEnemy:update_play_target()
 end
 
 
+function StupidEnemy:pos()
+	return self.body:getX(), self.body:getY()
+end
 
 V = Object:new()
 function V:init( x, y )

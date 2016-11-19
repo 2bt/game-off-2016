@@ -15,6 +15,8 @@ function Player:init()
 	self.body     = body
 	self.fixture  = fixture
     self.isDead   = false
+    self.isControlling = false
+
 end
 
 function Player:setPos( x, y )
@@ -30,6 +32,9 @@ end
 
 function Player:update()
 	-- need to split entity physics update from entity logic update
+    if self.isControlling == true then
+        return
+    end
 
 	local ix = (math.max(bool[isDown("right")], bool[isDown("d")])
 	    - math.max(bool[isDown("left")], bool[isDown("a")]) )
