@@ -15,6 +15,8 @@ canvas = G.newCanvas(W, H)
 love.window.setMode(W * 2, H * 2, {resizable = true})
 love.mouse.setVisible(false)
 
+lastMap = "data/map.json"
+
 require("helper")
 require("enemies")
 require("map")
@@ -23,11 +25,54 @@ require("item")
 require("terminal")
 require("door")
 
+
+shadow = {
+	canvas = G.newCanvas(W, H),
+	shader = G.newShader([[
+	vec4 effect( vec4 color, sampler2D tex, vec2 tex_coords, vec2 screen_coords ) {
+		return vec4(1.0, 1.0, 1.0, texture2D(tex, tex_coords).a);
+	}
+	]])
+}
+function shadow:draw()
+	local c = G.getCanvas()
+	G.setCanvas( self.canvas )
+	G.clear()
+	G.setShader( self.shader )
+	G.push()
+	G.translate(3, 3)
+
+	-- draw everything that casts a shadow
+	map:draw("walls")
+	map:drawDoors()
+	map:drawItems()
+	map:drawTerminals()
+	map.player:draw()
+	map:objects_call( "draw" )
+
+	G.pop()
+	G.setShader()
+	G.setCanvas(c)
+
+	G.push()
+	G.origin()
+	G.setColor(0, 0, 0, 100)
+	G.draw(self.canvas)
+	G.pop()
+end
+
+
+
+
 function love.load()
+	loadWorld()
+end
+
+function loadWorld()
 	world = P.newWorld()
 	world:setCallbacks(beginContact, endContact, preSolve, postSolve)
 	map = Map()
-	map:load_json_map( "data/map.json" )
+	map:load_json_map( lastMap )
 end
 
 function beginContact(a, b, coll)
@@ -36,15 +81,19 @@ function beginContact(a, b, coll)
         map:pickupItem(a)
     elseif (a:getUserData() == "terminal") then -- terminal entered
         map:playerAtTerminal(a, 1)
+    elseif (a:getUserData() == "enemy" and b:getUserData() == "player") then
+        map:playerDead()
     end
     -- b
     if (b:getUserData() == "item") then -- item picked up
         map:pickupItem(b)
     elseif (b:getUserData() == "terminal") then -- terminal entered
         map:playerAtTerminal(b, 1)
+    elseif (b:getUserData() == "enemy" and a:getUserData() == "player") then
+        map:playerDead()
     end
 end
- 
+
 function endContact(a, b, coll)
     -- a
     if (a:getUserData() == "terminal") then -- terminal left
@@ -55,10 +104,10 @@ function endContact(a, b, coll)
         map:playerAtTerminal(b, 0)
     end
 end
- 
+
 function preSolve(a, b, coll)
 end
- 
+
 function postSolve(a, b, coll, normalimpulse, tangentimpulse)
 end
 
@@ -66,8 +115,7 @@ end
 function love.update(dt)
 
 	-- need to split entity physics update from entity logic update
-	map.player:update()
-	map:objects_call( "update" )
+    map:update()
 
 	for i, door in ipairs(map.doors) do
 		door:update()
@@ -87,32 +135,28 @@ function love.draw()
 
 	-- render stuff
 	t = t + 1
-	local p = map.player
-	local px, py = p:pos()
-
-	G.translate( W / 2, H / 2 )
-	G.translate( math.floor(-px + 0.5), math.floor(-py + 0.5) )
     
+    map:setCamera(W, H)
+
     -- draw stuff
-    G.setColor( 255, 255, 255 )
 	map:draw("floor")
-	G.setColor( 255, 255, 255 )
-	map:draw("wall")
-	G.setColor( 255, 255, 255 )
-	map:drawItems()
-	G.setColor( 255, 255, 255 )
-	map:drawTerminals()
-	G.setColor( 255, 255, 255 )
+	shadow:draw()
+
 	map:drawDoors()
-	G.setColor( 255, 255, 255 )
-	p:draw()
-	G.setColor( 255, 255, 255 )
+	map:draw("walls")
+	map:drawItems()
+	map:drawTerminals()
+	map.player:draw()
 	map:objects_call( "draw" )
-	G.setColor( 255, 255, 255 )
+
+	map.player:draw()
+
+    if map.player.isDead == true then
+        map.player:drawDead()
+    end
 
 	if isDown("f2") then
 		draw_debug_physics()
-		G.setColor( 255, 255, 255 )
 	end
 
 
@@ -128,6 +172,9 @@ function love.draw()
 		G.scale(h / H, h / H)
 	end
 	G.setCanvas()
+	if map.player.isDead == false then
+	    G.setColor(255, 255, 255)
+	end
 	G.draw(canvas)
 end
 

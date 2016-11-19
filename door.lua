@@ -76,7 +76,7 @@ function Door:changeState()
         self.anim_x2 = self.anim_x2 - self.dx
         self.anim_y2 = self.anim_y2 - self.dy
         self.anim_start = self.time
-        self.anim_dur = 3
+        self.anim_dur = 1 
         self.anim    = true
     end
     print("door state: ", self.state)
