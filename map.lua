@@ -86,53 +86,53 @@ function Map:load_json_map( path )
 			for _, obj in ipairs(layer.objects) do
 
 				if obj.name == "player" then
-                    local x = obj.x + obj.width / 2
-                    local y = obj.y + obj.height / 2
-                    self.player:setPos( x, y )
+										local x = obj.x + obj.width / 2
+										local y = obj.y + obj.height / 2
+										self.player:setPos( x, y )
 
-                elseif obj.name == "item" then
-                    local item = Item()
-                    item:setActive(obj.x + obj.width / 2, obj.y + obj.height / 2, obj.width, obj.height)
-                    table.insert(self.items, item)
-				
+								elseif obj.name == "item" then
+										local item = Item()
+										item:setActive(obj.x + obj.width / 2, obj.y + obj.height / 2, obj.width, obj.height)
+										table.insert(self.items, item)
+
 				elseif obj.name == "terminal" then
-				    local terminal = Terminal()
-				    terminal:setActive(obj.x + obj.width / 2, obj.y + obj.height / 2, obj.width, obj.height, obj.properties.controlID)
-				    table.insert(self.terminals, terminal)
+						local terminal = Terminal()
+						terminal:setActive(obj.x + obj.width / 2, obj.y + obj.height / 2, obj.width, obj.height, obj.properties.controlID)
+						table.insert(self.terminals, terminal)
 				end
 
 			end
 
-    elseif layer.name == "doors" then
-        for _, obj in ipairs(layer.objects) do
-            if obj.name == "door" then
-                local door = Door()
-                door:setActive(obj.x + obj.width / 2, obj.y + obj.height / 2, obj.width, obj.height, obj.properties.id, obj.properties.state, obj.properties.dx, obj.properties.dy)
-                table.insert(self.doors, door)
-            end
-        end
+		elseif layer.name == "doors" then
+				for _, obj in ipairs(layer.objects) do
+						if obj.name == "door" then
+								local door = Door()
+								door:setActive(obj.x + obj.width / 2, obj.y + obj.height / 2, obj.width, obj.height, obj.properties.id, obj.properties.state, obj.properties.dx, obj.properties.dy)
+								table.insert(self.doors, door)
+						end
+				end
 
 
-    elseif layer.name == "physics_walls" then
-      for _, obj in ipairs(layer.objects) do
-        
-        if obj.polyline then
-          local points = {}
-          for _, point in ipairs(obj.polyline) do
-            table.insert( points, point.x + obj.x )
-            table.insert( points, point.y + obj.y )
-          end
-          local shape   = P.newChainShape( false, points )
-          local fixture = P.newFixture( self.body_static, shape )
-          fixture:setUserData( "wall" )
+		elseif layer.name == "physics_walls" then
+			for _, obj in ipairs(layer.objects) do
 
-        else -- rectangle
-          local shape   = P.newRectangleShape( obj.x + obj.width/2, obj.y + obj.height/2, obj.width, obj.height, obj.rotation )
-          local fixture = P.newFixture( self.body_static, shape )
-          fixture:setUserData( "wall" )
-        
-        end
-      end
+				if obj.polyline then
+					local points = {}
+					for _, point in ipairs(obj.polyline) do
+						table.insert( points, point.x + obj.x )
+						table.insert( points, point.y + obj.y )
+					end
+					local shape	 = P.newChainShape( false, points )
+					local fixture = P.newFixture( self.body_static, shape )
+					fixture:setUserData( "wall" )
+
+				else -- rectangle
+					local shape	 = P.newRectangleShape( obj.x + obj.width/2, obj.y + obj.height/2, obj.width, obj.height, obj.rotation )
+					local fixture = P.newFixture( self.body_static, shape )
+					fixture:setUserData( "wall" )
+
+				end
+			end
 
 		elseif layer.type == "objectgroup" then
 			for _, obj_desc in ipairs( layer.objects ) do
@@ -239,57 +239,56 @@ function Map:draw( layername )
 end
 
 function Map:drawItems()
-    for _, item in pairs(self.items) do
-        item:draw()
-    end
+	for _, item in pairs(self.items) do
+		item:draw()
+	end
 end
 
 function Map:drawTerminals()
-    for _, terminal in pairs(self.terminals) do
-        terminal:draw()
-    end
+	for _, terminal in pairs(self.terminals) do
+		terminal:draw()
+	end
 end
 
 function Map:drawDoors()
-    for _, door in pairs(self.doors) do
-        door:draw()
-    end
+	for _, door in pairs(self.doors) do
+		door:draw()
+	end
 end
 
 function Map:pickupItem(item)
-    for _, i in pairs(self.items) do
-        if i.fixture == item then
-            i.fixture:destroy()
-            i.static:destroy()
-            table.remove(self.items, _)
-        end
-    end
+	for _, i in pairs(self.items) do
+		if i.fixture == item then
+			i.fixture:destroy()
+			i.static:destroy()
+			table.remove(self.items, _)
+		end
+	end
 end
 
 function Map:playerAtTerminal(terminal, atTerminal)
-    for _, t in pairs(self.terminals) do
-        if t.fixture == terminal then
-            t:setPlayerAtTerminal(atTerminal)
-        end
-    end
+	for _, t in pairs(self.terminals) do
+		if t.fixture == terminal then
+			t:setPlayerAtTerminal(atTerminal)
+		end
+	end
 end
 
 function Map:checkTerminals()
-    for _, t in pairs(self.terminals) do
+	for _, t in pairs(self.terminals) do
 
-        if t.isUsed == 1 and bool[isDown("e")] == 0 then
-            t.isUsed = 0
-        end
+		if t.isUsed == 1 and bool[isDown("e")] == 0 then
+			t.isUsed = 0
+		end
 
-        if t.playerAtTerminal == 1 and bool[isDown("e")] == 1 and t.isUsed == 0 then
-            for _, d in pairs(self.doors) do
-                if t.controlID == d.id then
-                    d:changeState()
-                    t.isUsed = 1
-                end
-            end
-        end
-    end
+		if t.playerAtTerminal == 1 and bool[isDown("e")] == 1 and t.isUsed == 0 then
+			for _, d in pairs(self.doors) do
+				if t.controlID == d.id then
+					d:changeState()
+					t.isUsed = 1
+				end
+			end
+		end
+	end
 end
 
-    
