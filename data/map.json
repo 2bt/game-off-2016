@@ -75,12 +75,12 @@
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":31.8181818181818,
-                 "x":1072,
+                 "width":15.8181818181818,
+                 "x":1088,
                  "y":544.333333333333
                 }, 
                 {
-                 "height":17.5,
+                 "height":16,
                  "id":57,
                  "name":"terminal",
                  "properties":
@@ -95,11 +95,11 @@
                  "type":"",
                  "visible":true,
                  "width":16,
-                 "x":1312.25,
-                 "y":623.5
+                 "x":1312,
+                 "y":624
                 }, 
                 {
-                 "height":17.5,
+                 "height":16,
                  "id":119,
                  "name":"terminal",
                  "properties":
@@ -114,8 +114,8 @@
                  "type":"",
                  "visible":true,
                  "width":16,
-                 "x":1093.73589590783,
-                 "y":651.310885975368
+                 "x":1312,
+                 "y":480
                 }],
          "opacity":0.899999976158142,
          "type":"objectgroup",
@@ -159,7 +159,7 @@
                  "type":"",
                  "visible":true,
                  "width":32,
-                 "x":1328,
+                 "x":1327.75,
                  "y":512
                 }, 
                 {
@@ -764,7 +764,7 @@
          "x":0,
          "y":0
         }],
- "nextobjectid":120,
+ "nextobjectid":122,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tileheight":16,

@@ -7,7 +7,7 @@ local my_img = G.newImage("data/round-robot.png")
 local my_anims = {
 	img   = my_img,
 	quads = makeQuads( my_img:getWidth(), my_img:getHeight(), 16),
-	idle  = { duration = 1, quads = { 1 } },
+	idle  = { duration = 1,   quads = { 1 } },
 	blink = { duration = 0.3, quads = { 2, 3, 4, 5 } },
 }
 

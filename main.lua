@@ -148,14 +148,9 @@ function love.update(dt)
 
 	map.player:update()
 
-	for _, o in ipairs( map.objects ) do
-		o:update()
-	end
-
-	for _, door in ipairs(map.doors) do
-		door:update()
-	end
-
+	for _, o in ipairs(map.objects)   do o:update() end
+	for _, o in ipairs(map.doors)     do o:update() end
+	for _, o in ipairs(map.terminals) do o:update() end
 
 	world:update( 1 / 60 )
 

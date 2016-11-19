@@ -153,8 +153,12 @@ function Player:update()
 	local mass        = self.body:getMass()
 	self.body:applyLinearImpulse( accel_x * mass, accel_y * mass )
 
-	if ( vx ~= 0 or vy ~= 0 ) and ( ix ~= 0 or iy ~= 0 ) then
+
+	-- find the right angle
+	if vx^2 + vy^2 > 1.5 then
 		self.ang = math.atan2(vx, -vy)
+	elseif ix^2 + iy^2 > 0 then
+		self.ang = math.atan2(ix, -iy)
 	end
 
 
