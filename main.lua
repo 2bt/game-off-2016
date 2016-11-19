@@ -149,8 +149,6 @@ function love.draw()
 	map.player:draw()
 	map:objects_call( "draw" )
 
-	map.player:draw()
-
     if map.player.isDead == true then
         map.player:drawDead()
     end
