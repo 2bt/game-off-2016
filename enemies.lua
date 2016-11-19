@@ -149,7 +149,6 @@ function StupidEnemy:draw_debug_ai()
       G.line( x1, y1, x2, y2 )
     end
   end
-  self.ai_debug = {}
 end
 
 function StupidEnemy:change_ai_state( state )
@@ -161,6 +160,7 @@ function StupidEnemy:change_ai_state( state )
 end
 
 function StupidEnemy:update_find_target()
+	self.ai_debug = {}
 	local player = map.player
 	if not player then return end
 	local x1, y1 = self.body:getPosition()
