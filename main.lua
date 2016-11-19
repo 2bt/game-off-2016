@@ -50,6 +50,13 @@ function shadow:draw()
 	map.player:draw()
 	map:draw("walls")
 
+    if map.player.isDead == true then
+		G.setNewFont(30)
+		G.setColor(255,10,50)
+		G.print("YOU ARE DEAD !!!", map.player.body:getX() -125, map.player.body:getY())
+		G.setNewFont()
+		G.print("Press ENTER to respawn ...", map.player.body:getX() -60, map.player.body:getY()+40)
+    end
 
 	G.pop()
 	G.setShader()
