@@ -63,6 +63,10 @@ function Door:update()
 		self.x = x
 		self.y = y
 	end
+
+	if isDown("f4") then
+		self:changeState()
+	end
 end
 
 function Door:changeState()
