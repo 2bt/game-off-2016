@@ -177,6 +177,7 @@ function StupidEnemy:update_find_target()
 			end
 
 			local obj = fixture:getUserData()
+			if not obj then return 1 end
 			if obj.type == "wall" or obj.type == "door" then
 				self.ai_target = nil
 				return 0

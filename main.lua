@@ -20,6 +20,7 @@ lastMap = "data/map.json"
 
 require("helper")
 require("enemies")
+require("droid")
 require("map")
 require("player")
 require("item")
@@ -121,21 +122,41 @@ end
 
 function beginContact(a, b, coll)
 	for i = 1, 2 do
+		
+		if a:isSensor() then
+			local ud = a:getUserData()
+			if ud and ud.beginContact then
+				ud.beginContact( ud.self, a, b )
+			end
+		else
+
 		local o1 = a:getUserData()
 		local o2 = b:getUserData()
 
-		if o1.type == "item" and o2.type == "player" then -- item picked up
-			map:removeItem(o1)
-		elseif o1.type == "enemy" and o2.type == "player" then
-			map.player:kill()
+		if o1 and o2 then
+			if o1.type == "item" and o2.type == "player" then -- item picked up
+				map:removeItem(o1)
+			elseif o1.type == "enemy" and o2.type == "player" then
+				map.player:kill()
+			end
 		end
+
+	end
+
 		a, b = b, a 	-- try the other direction
 	end
 end
 
 function endContact(a, b, coll)
 	for i = 1, 2 do
-		-- ...
+
+		if a:isSensor() then
+			local ud = a:getUserData()
+			if ud and ud.endContact then
+				ud.endContact( ud.self, a, b )
+			end
+		end
+
 		a, b = b, a		-- try the other direction
 	end
 end
@@ -201,6 +222,13 @@ function love.draw()
 	if isDown("f2") then
 		draw_debug_physics()
 	end
+	if isDown( "f3" ) then
+		for _, o in ipairs(map.objects) do
+			if o.draw_debug_ai then
+				o:draw_debug_ai()
+			end
+		end
+	end
 
 
 	-- draw canvas independent of resolution
@@ -233,9 +261,10 @@ function draw_debug_physics()
 
 		G.push()
 		G.translate( bx, by )
+		G.rotate( bangle )
 		G.setColor( 255, 192, 192 )
 		G.circle( 'fill', 0, 0, 3, 6 )
-		G.line( 0, 0, 8 * math.cos(bangle), 8 * math.sin(bangle) )
+		G.line( 0, 0, 8, 0 )
 		G.setColor( 255, 64, 64 )
 
 		for j, fixture in pairs(fixtures) do

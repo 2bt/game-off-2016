@@ -15,6 +15,7 @@ function Player:init()
 	self.timer = 0
 	self.frame = 1
 	self.ang = 0
+	self.id = "player"
 
 	local body    = P.newBody( world, 0, 0, "dynamic" )
 	local radius  = 6
