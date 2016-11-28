@@ -21,6 +21,7 @@ function Droid:init( obj )
 	self:initBody( obj )
 	self:initSight()
 	self:initAnim()
+  self:initBehaviour( obj )
 
 	print( "Droid:init "..tostring(self.name) )
 end
@@ -42,11 +43,6 @@ end
 
 function Droid:initAnim()
 	-- call setAnim to change animation, call updateAnim in update to advance animation
-	self.ai_target = nil
-	self.ai_state  = nil
-	self.ai_debug  = {}
-	self.isBeingControlled = false
-
 	self.anims      = my_anims
 	self.anim_timer = 0
 	self.anim_name  = "idle"
@@ -84,8 +80,11 @@ function Droid:initSight()
 	sensor2:setSensor( sightCallback )
 end
 
-function Droid:initBehaviour()
+function Droid:initBehaviour( obj )
 	self.bhv_target_id = nil
+	self.ai_patrol_pos = 1
+	self.ai_debug  = {}
+  self.ai_patrol = obj.properties.ai_patrol
 end
 
 
@@ -102,21 +101,33 @@ end
 function Droid:updateBehaviour()
 	local hunting = false
 	for id, obj in pairs(self.inSight) do
-		if obj.type == "player" then
-			if self:updateBehaviourMoveTo( obj:pos() ) then
-				hunting = true
-				self.bhv_target_id = obj.id
-			end
+		if obj.type == "player" and self:updateBehaviourMoveTo( obj:pos() ) then
+			hunting = true
+			self.bhv_target_id = obj.id
 		end
 	end
-	if not hunting then
+	if not hunting and self.bhv_target_id then
 		local pos = self.lastSeen[ self.bhv_target_id ]
-		if pos then
-			if self:updateBehaviourMoveTo( unpack(pos) ) then
-				hunting = true
+		if pos and self:updateBehaviourMoveTo( unpack(pos) ) then
+			hunting = true
+		else
+			self.bhv_target_id = nil
+		end
+	elseif not hunting and self.ai_patrol then
+		local patrol_path = map.object_by_name[ self.ai_patrol ] or {}
+		local patrol_polyline = patrol_path.polyline
+		if patrol_polyline and #patrol_polyline then
+			local pt = patrol_polyline[ self.ai_patrol_pos ]
+			local x = pt.x + patrol_path.x
+			local y = pt.y + patrol_path.y
+			if self:updateBehaviourMoveTo( x, y ) then
+			elseif self.ai_patrol_pos < #patrol_polyline then
+				self.ai_patrol_pos = self.ai_patrol_pos + 1
 			else
-				self.bhv_target_id = nil
+				self.ai_patrol_pos = 1
 			end
+		else
+			self.ai_patrol = nil
 		end
 	end
 
@@ -185,11 +196,12 @@ function Droid:updateBehaviourMoveTo( x, y )
 	local a = V( self.body:getPosition() )
 	local b = V( x, y )
 	local d = b - a
+	local vx, vy = self.body:getLinearVelocity()
 	if d:length2() > self.radius*self.radius then
 		d:norm()
 		d:mul( 4 )
 		self.body:applyLinearImpulse( d.x, d.y )
-		self.body:setAngle( math.atan2( d.y, d.x ) )
+		self.body:setAngle( math.atan2( vy, vx ) )
 		self:ai_debug_add { "dot", x, y }
 		return true
 	end

@@ -21,7 +21,8 @@ function Map:init()
 	self.items = {}
 	self.terminals = {}
 	self.doors = {}
-    self.objects = {}
+	self.objects = {}
+	self.object_by_name = {}
 	self.px = 0
 	self.py = 0
 end
@@ -114,12 +115,16 @@ function Map:load_json_map( path )
 		elseif layer.type == "objectgroup" then
 			for _, o in ipairs( layer.objects ) do
 
-				-- find constructor of enemy
-				local constructor = _G[ o.type ]
-				if not constructor then
-					print("WOOOT! There's no " .. o.type)
-				else
-					constructor( o )
+				if o.type and o.type ~= "" then
+					local constructor = _G[ o.type ]
+					if not constructor then
+						print("WOOOT! There's no " .. o.type)
+					else
+						constructor( o )
+					end
+				elseif o.type == "" and o.name ~= "" then
+					print( "insert object_by_name[ "..o.name.." ]" )
+					self.object_by_name[ o.name ] = o
 				end
 			end
 		end
