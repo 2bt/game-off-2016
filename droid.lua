@@ -82,9 +82,8 @@ end
 
 function Droid:initBehaviour( obj )
 	self.bhv_target_id = nil
-	self.ai_patrol_pos = 1
-	self.ai_debug  = {}
-  self.ai_patrol = obj.properties.ai_patrol
+	self.bhv_patrol_pos = 1
+  self.bhv_patrol = obj.properties.bhv_patrol
 end
 
 
@@ -113,21 +112,21 @@ function Droid:updateBehaviour()
 		else
 			self.bhv_target_id = nil
 		end
-	elseif not hunting and self.ai_patrol then
-		local patrol_path = map.object_by_name[ self.ai_patrol ] or {}
+	elseif not hunting and self.bhv_patrol then
+		local patrol_path = map.object_by_name[ self.bhv_patrol ] or {}
 		local patrol_polyline = patrol_path.polyline
 		if patrol_polyline and #patrol_polyline then
-			local pt = patrol_polyline[ self.ai_patrol_pos ]
+			local pt = patrol_polyline[ self.bhv_patrol_pos ]
 			local x = pt.x + patrol_path.x
 			local y = pt.y + patrol_path.y
 			if self:updateBehaviourMoveTo( x, y ) then
-			elseif self.ai_patrol_pos < #patrol_polyline then
-				self.ai_patrol_pos = self.ai_patrol_pos + 1
+			elseif self.bhv_patrol_pos < #patrol_polyline then
+				self.bhv_patrol_pos = self.bhv_patrol_pos + 1
 			else
-				self.ai_patrol_pos = 1
+				self.bhv_patrol_pos = 1
 			end
 		else
-			self.ai_patrol = nil
+			self.bhv_patrol = nil
 		end
 	end
 

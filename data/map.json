@@ -941,7 +941,7 @@
                  "name":"droid2",
                  "properties":
                     {
-                     "ai_patrol":"droid2-path"
+                     "bhv_patrol":"droid2-path"
                     },
                  "rotation":0,
                  "type":"Droid",
