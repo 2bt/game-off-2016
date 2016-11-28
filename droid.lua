@@ -26,11 +26,12 @@ function Droid:init( obj )
 end
 
 function Droid:initBody( obj )
+	-- makes body and collision shape, used in updateBehaviourMoveTo to move towards a target
 	local body    = P.newBody( world, obj.x, obj.y, "dynamic" )
 	local radius  = math.max( 8, math.max( obj.width, obj.height ) )
 	local shape   = P.newCircleShape( radius )
 	local fixture = P.newFixture( body, shape )
-	fixture:setUserData(self)
+	fixture:setUserData(self) -- used in main beginContact
 	body:setLinearDamping( 4, 4 )
 	body:setAngularDamping( 1 )
 	--body:setFixedRotation( true )
@@ -40,6 +41,7 @@ function Droid:initBody( obj )
 end
 
 function Droid:initAnim()
+	-- call setAnim to change animation, call updateAnim in update to advance animation
 	self.ai_target = nil
 	self.ai_state  = nil
 	self.ai_debug  = {}
@@ -53,6 +55,11 @@ function Droid:initAnim()
 end
 
 function Droid:initSight()
+	-- use sensor shapes
+	-- call in main beginContact the sightBeginContact method, based on userData of sensor
+	-- in sightBeginContact, fill sightMaybe with other object
+	-- in updateSight, rayCast every object in sightMaybe and fill inSight if visible
+	-- if object inSight and not visible anymore, save in lastSeen
 	self.sightMaybe = {}
 	self.inSight = {}
 	self.lastSeen = {}
@@ -211,11 +218,13 @@ function Droid:sightEndContact( a, b )
 	if not ud then
 		return
 	elseif ud.id then
+		-- TODO fill lastSeen
 		self.sightMaybe[ ud.id ] = nil
 	end
 end
 
 function Droid:updateSight()
+	-- TODO check also inSight if still visible
 	for id, o in pairs( self.sightMaybe ) do
 		if self:updateSightRayCast( o ) then
 			self.inSight[ id ] = o
