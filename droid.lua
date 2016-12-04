@@ -1,3 +1,80 @@
+B = require('behaviourtree')
+
+b_tree = B:new({
+	tree = B.Priority:new({
+		nodes = { "look_for_player", "hunt", "patrol", "idle" }
+	})
+})
+
+B.Task:new({
+	name   = "look_for_player",
+	run    = function( task, self )
+		if self.task_hunt_id then
+			return task:fail()
+		end
+		self:setAnim( "idle" )
+		self.body:applyTorque( 10 )
+		for id, obj in pairs( self.inSight ) do
+			if obj.type == "player" then
+				self.task_hunt_id = obj.id
+				return task:success()
+			end
+		end
+		task:fail()
+	end,
+})
+
+B.Task:new({
+	name   = "hunt",
+	run    = function( task, self )
+		if not self.task_hunt_id then
+			return task:fail()
+		end
+		local pos = self.lastSeen[ self.task_hunt_id ]
+		if pos and self:updateBehaviourMoveTo( unpack(pos) ) then
+			self:setAnim( "walk" )
+			return task:success()
+		else
+			self.task_hunt_id = nil
+			return task:fail()
+		end
+	end,
+})
+
+B.Task:new({
+	name   = "patrol",
+	run    = function( task, self )
+		if not self.task_patrol_name then
+			return task:fail()
+		end
+		local patrol_path = map.object_by_name[ self.task_patrol_name ] or {}
+		local patrol_polyline = patrol_path and patrol_path.polyline
+		if not patrol_polyline or not #patrol_polyline then
+			self.task_patrol_name = nil
+			return task:fail()
+		end
+		local pt = patrol_polyline[ self.task_patrol_pos ]
+		local x = pt.x + patrol_path.x
+		local y = pt.y + patrol_path.y
+		if self:updateBehaviourMoveTo( x, y ) then
+		elseif self.task_patrol_pos < #patrol_polyline then
+			self.task_patrol_pos = self.task_patrol_pos + 1
+		else
+			self.task_patrol_pos = 1
+		end
+		self:setAnim( "walk" )
+		return task:success()
+	end,
+})
+
+B.Task:new({
+	name   = "idle",
+	run    = function( task, self )
+		task:success()
+	end
+})
+
+
 
 Droid = Object:new {
 	type = "enemy"
@@ -81,9 +158,11 @@ function Droid:initSight()
 end
 
 function Droid:initBehaviour( obj )
-	self.bhv_target_id = nil
-	self.bhv_patrol_pos = 1
-  self.bhv_patrol = obj.properties.bhv_patrol
+	self.task_hunt_id = nil
+	self.task_patrol_pos = 1
+  self.task_patrol_name = obj.properties.task_patrol_name
+
+	self.b_tree = b_tree
 end
 
 
@@ -98,43 +177,11 @@ end
 
 
 function Droid:updateBehaviour()
-	local hunting = false
-	for id, obj in pairs(self.inSight) do
-		if obj.type == "player" and self:updateBehaviourMoveTo( obj:pos() ) then
-			hunting = true
-			self.bhv_target_id = obj.id
-		end
-	end
-	if not hunting and self.bhv_target_id then
-		local pos = self.lastSeen[ self.bhv_target_id ]
-		if pos and self:updateBehaviourMoveTo( unpack(pos) ) then
-			hunting = true
-		else
-			self.bhv_target_id = nil
-		end
-	elseif not hunting and self.bhv_patrol then
-		local patrol_path = map.object_by_name[ self.bhv_patrol ] or {}
-		local patrol_polyline = patrol_path.polyline
-		if patrol_polyline and #patrol_polyline then
-			local pt = patrol_polyline[ self.bhv_patrol_pos ]
-			local x = pt.x + patrol_path.x
-			local y = pt.y + patrol_path.y
-			if self:updateBehaviourMoveTo( x, y ) then
-			elseif self.bhv_patrol_pos < #patrol_polyline then
-				self.bhv_patrol_pos = self.bhv_patrol_pos + 1
-			else
-				self.bhv_patrol_pos = 1
-			end
-		else
-			self.bhv_patrol = nil
-		end
-	end
-
-	if hunting then
-		self:setAnim( "walk" )
-	else
-		self:setAnim( "idle" )
-		self.body:applyTorque( 10 )
+	b_tree:run( self )
+	if self.name and self.actualTask ~= b_tree.rootNode.actualTask then
+		self.actualTask = b_tree.rootNode.actualTask
+		local node = b_tree.rootNode.nodes[ self.actualTask ]
+		print( self.name, node )
 	end
 end
 
@@ -229,21 +276,24 @@ function Droid:sightEndContact( a, b )
 	if not ud then
 		return
 	elseif ud.id then
-		-- TODO fill lastSeen
 		self.sightMaybe[ ud.id ] = nil
 	end
 end
 
 function Droid:updateSight()
-	-- TODO check also inSight if still visible
 	for id, o in pairs( self.sightMaybe ) do
 		if self:updateSightRayCast( o ) then
 			self.inSight[ id ] = o
-		elseif self.inSight[ id ] then
-			self.inSight[ id ] = nil
 			if o.pos then
 				self.lastSeen[ o.id ] = { o:pos() }
 			end
+		elseif self.inSight[ id ] then
+			self.inSight[ id ] = nil
+		end
+	end
+	for id, o in pairs( self.inSight ) do
+		if not self.sightMaybe[ id ] then
+			self.inSight[ id ] = nil
 		end
 	end
 end

@@ -941,7 +941,7 @@
                  "name":"droid2",
                  "properties":
                     {
-                     "bhv_patrol":"droid2-path"
+                     "task_patrol_name":"droid2-path"
                     },
                  "rotation":0,
                  "type":"Droid",
