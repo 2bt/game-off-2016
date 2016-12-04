@@ -86,7 +86,7 @@ function Player:update()
 			for _, contact in pairs(self.fixture:getBody():getContactList()) do
 				for _, f in ipairs({ contact:getFixtures() }) do
 					local obj = f:getUserData()
-					if obj.type == "terminal" then
+					if obj and obj.type == "terminal" then
 						local cx, cy = contact:getPositions() -- ignore the 2nd point
 						if cx then
 							local px, py = self:pos()
